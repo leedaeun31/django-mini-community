@@ -19,7 +19,7 @@
         <ul>
             <li><a href="/">main</a></li>
             {% if user.is_authenticated %}
-                <li><a href="{% url 'board:create_room' %}">Room 생성</a></li>
+                <li><a href="{% url 'board:create_room' %}">방 생성</a></li>
                 <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
                 <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
             {% else %}

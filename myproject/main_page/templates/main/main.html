@@ -1,53 +1,57 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
-    <!-- 참가 링크 입력 -->
-    <div style="margin-bottom: 20px;">
-        <label style="font-size: 18px; font-weight: bold;">참가 링크:</label>
-        <form method="post" style="display: flex; gap: 10px; margin-top: 10px;">
-            {% csrf_token %}
-            <input type="text" name="link" placeholder="방 링크 또는 UUID 입력"
-                   style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
-            <button type="submit"
-                    style="background: #2c7be5; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer;">
-                등록
-            </button>
-        </form>
+{% if user.is_authenticated %}
+    <div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+        <!-- 참가 링크 입력 -->
+        <div style="margin-bottom: 20px;">
+            <label style="font-size: 18px; font-weight: bold;">참가 링크:</label>
+            <form method="post" style="display: flex; gap: 10px; margin-top: 10px;">
+                {% csrf_token %}
+                <input type="text" name="link" placeholder="방 링크 또는 UUID 입력"
+                    style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+                <button type="submit"
+                        style="background: #f8daf2b9; color: black; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer;">
+                    등록
+                </button>
+            </form>
+        </div>
+
+        <!-- 참가중인 방 -->
+        <h2 style="font-size: 20px; font-weight: bold; margin: 20px 0;">참가 중인 방</h2>
+        {% if rooms %}
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for room in rooms %}
+                <a href="{% url 'board:room_detail' room.slug %}"
+                class="room-card"
+                style="border: 1px solid #e5e4e4; border-radius: 10px; padding: 20px;
+                        background: #f8daf2b9; display: block; text-decoration: none; color: black;
+                        transition: transform 0.2s ease;">
+                    {{ room.name }}
+                </a>
+            {% endfor %}
     </div>
 
-    <!-- 참가중인 방 -->
-    <h2 style="font-size: 20px; font-weight: bold; margin: 20px 0;">참가 중인 방</h2>
-    {% if rooms %}
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; flex-direction: column; gap: 15px;">
-        {% for room in rooms %}
-            <a href="{% url 'board:room_detail' room.slug %}"
-            class="room-card"
-            style="border: 2px solid #333; border-radius: 10px; padding: 20px;
-                    background: #f4f4f4; display: block; text-decoration: none; color: black;
-                    transition: transform 0.2s ease;">
-                {{ room.name }}
-            </a>
-        {% endfor %}
-</div>
-
+        </div>
+        {% else %}
+        <p style="color: f8daf2b9;">아직 참가한 방이 없습니다.</p>
+        {% endif %}
     </div>
     {% else %}
-    <p style="color: gray;">아직 참가한 방이 없습니다.</p>
-    {% endif %}
-</div>
+        <h5 id="header_title">로그인 후 여러분만의 소통 게시판을 만들어보세요!</h5>
+{% endif %}
 
 <script>
     // hover 효과
     document.querySelectorAll('.room-card').forEach(card => {
         card.addEventListener('mouseover', () => {
             card.style.transform = 'scale(1.02)';
-            card.style.background = '#e2e6ea';
+            card.style.background = '#f8daf2b9';
         });
         card.addEventListener('mouseout', () => {
             card.style.transform = 'scale(1)';
-            card.style.background = '#f4f4f4';
+            card.style.background = '#f8daf2b9';
         });
     });
 </script>

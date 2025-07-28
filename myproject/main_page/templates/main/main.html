@@ -1,38 +1,54 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="kr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌟다은이의 웹 페이지 입니당🌟</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="icon" href="data:,">
-</head>
-<body>
+{% extends 'main/base.html' %}
 
-    <header>
-        <h2 id="header_title">🌟{{ user.username|default:"게스트" }}의 웹 페이지 입니당🌟</h2>
-    </header>
-    <hr>
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+    <!-- 참가 링크 입력 -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 18px; font-weight: bold;">참가 링크:</label>
+        <form method="post" style="display: flex; gap: 10px; margin-top: 10px;">
+            {% csrf_token %}
+            <input type="text" name="link" placeholder="방 링크 또는 UUID 입력"
+                   style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+            <button type="submit"
+                    style="background: #2c7be5; color: white; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer;">
+                등록
+            </button>
+        </form>
+    </div>
 
-    <nav>
-        <ul>
-            <li><a href="/">main</a></li>
-            
-            {% if user.is_authenticated %}
-                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
-                <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
-            {% else %}
-                <li><a href="{% url 'user:login_page' %}">로그인</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-    <hr>
+    <!-- 참가중인 방 -->
+    <h2 style="font-size: 20px; font-weight: bold; margin: 20px 0;">참가 중인 방</h2>
+    {% if rooms %}
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+        {% for room in rooms %}
+            <a href="{% url 'board:room_detail' room.slug %}"
+            class="room-card"
+            style="border: 2px solid #333; border-radius: 10px; padding: 20px;
+                    background: #f4f4f4; display: block; text-decoration: none; color: black;
+                    transition: transform 0.2s ease;">
+                {{ room.name }}
+            </a>
+        {% endfor %}
+</div>
 
-    <main>
-        <!-- 본문 내용 -->
-    </main>
+    </div>
+    {% else %}
+    <p style="color: gray;">아직 참가한 방이 없습니다.</p>
+    {% endif %}
+</div>
 
-    <footer></footer>
-</body>
-</html>
+<script>
+    // hover 효과
+    document.querySelectorAll('.room-card').forEach(card => {
+        card.addEventListener('mouseover', () => {
+            card.style.transform = 'scale(1.02)';
+            card.style.background = '#e2e6ea';
+        });
+        card.addEventListener('mouseout', () => {
+            card.style.transform = 'scale(1)';
+            card.style.background = '#f4f4f4';
+        });
+    });
+</script>
+{% endblock %}

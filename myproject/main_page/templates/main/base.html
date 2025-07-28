@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟다은이의 웹 페이지 입니당🌟</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+
+    <header>
+        <h2 id="header_title">🌟{{ user.username|default:"게스트" }}의 웹 페이지 입니당🌟</h2>
+    </header>
+    <hr>
+
+    <nav>
+        <ul>
+            <li><a href="/">main</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'board:create_room' %}">Room 생성</a></li>
+                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
+            {% else %}
+                <li><a href="{% url 'user:login_page' %}">로그인</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <hr>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer></footer>
+</body>
+</html>

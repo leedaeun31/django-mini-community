@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="{% static 'css/mypage.css' %}">
+    <link rel="icon" href="data:,">
+    <script>
+        // 닉네임 변경 input 토글
+        function toggleNicknameForm() {
+            const form = document.getElementById("nickname-form");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+
+        // 프로필 이미지 클릭하면 input 파일 열기
+        function triggerImageUpload() {
+            document.getElementById("profile_image").click();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>마이페이지</h1>
+
+        <div class="profile-section">
+            <!-- 프로필 이미지 -->
+            {% if user.user_profile_image %}
+                <img src="{{ user.user_profile_image.url }}" 
+                     alt="프로필 이미지" class="profile-img" onclick="triggerImageUpload()">
+            {% elif "코난" in user.username or "탐정" in user.username %}
+                <img src="{% static 'images/코난.jpg' %}" 
+                     alt="기본 이미지_코난" class="profile-img" onclick="triggerImageUpload()">
+            {% else %}
+                <img src="{% static 'images/default_profile.png' %}" 
+                     alt="기본 이미지" class="profile-img" onclick="triggerImageUpload()">
+            {% endif %}
+
+            <!-- 프로필 이미지 변경 -->
+            <form method="post" enctype="multipart/form-data" id="image-form">
+                {% csrf_token %}
+                <input type="file" id="profile_image" name="profile_image" style="display:none" onchange="this.form.submit()">
+            </form>
+
+            <!-- 닉네임 및 변경 버튼 -->
+            <div class="nickname-section">
+                <span class="nickname">{{ user.username }}</span>
+                <button type="button" class="edit-btn" onclick="toggleNicknameForm()">변경</button>
+            </div>
+
+            <!-- 닉네임 변경 input -->
+            <form method="post" id="nickname-form" style="display:none;">
+                {% csrf_token %}
+                <input type="text" name="username" placeholder="새 닉네임 입력" class="input-text">
+                <button type="submit" class="save-btn">저장</button>
+            </form>
+        </div>
+
+        <!-- 나머지 정보 -->
+        <div class="info-section">
+            <p>성별: <span>{% if user.user_gender == 'F' %}여성{% else %}남성{% endif %}</span></p>
+            <p>이메일: <span>{{ user.email }}</span></p>
+            <p>휴대폰 번호: <span>{{ user.user_phone_num }}</span></p>
+        </div>
+
+        <!-- 메인으로 이동 -->
+        <a href="{% url 'main_page:main' %}" class="main-link">메인으로 돌아가기</a>
+    </div>
+</body>
+</html>

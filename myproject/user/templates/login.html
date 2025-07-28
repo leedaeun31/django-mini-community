@@ -1,0 +1,87 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인</title>
+    <style>
+        /* 전체 배경 및 폰트 설정 */
+        body {
+            margin: 0;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 90%);
+        }
+
+        /* 로그인 박스 스타일 */
+        .login-container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 90%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            text-align: center; /* 가운데 정렬 */
+        }
+
+        /* h3 제목 스타일 */
+        h3 {
+            margin-bottom: 30px;
+            font-size: 1.5em; /* 글씨 크기 조절 */
+            color: #333;
+        }
+
+        /* 로그인 버튼 스타일 */
+        .naver-login {
+            display: flex;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .naver-login:hover {
+            transform: scale(1.05);
+        }
+
+        /* 이미지 버튼 스타일 */
+        .naver-login img {
+            width: 200px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            transition: box-shadow 0.2s;
+        }
+
+        .naver-login img:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* 반응형: 모바일에서 크기 조절 */
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 20px 15px;
+            }
+
+            .naver-login img {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h3>로그인 페이지</h3>
+        <!-- 네이버 로그인 버튼 -->
+        <div class="naver-login">
+            <a href="{% url 'user:naver_login' %}">
+                <img src="https://static.nid.naver.com/oauth/small_g_in.PNG" alt="네이버 로그인" />
+            </a>
+        </div>
+    </div>
+</body>
+</html>

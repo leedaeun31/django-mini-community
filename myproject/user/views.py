@@ -7,6 +7,8 @@ from user.models import User
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+import os 
+
 client_id = settings.NAVER_CLIENT_ID
 client_secret = settings.NAVER_CLIENT_SECRET
 callback_url = settings.NAVER_CALLBACK_URL
@@ -25,6 +27,11 @@ def mypage(request):
         profile_image = request.FILES.get("profile_image")
 
         if profile_image:
+            if request.user.user_profile_image:
+                old_image=request.user.user_profile_image.path
+                if os.path.exists(old_image):
+                    os.remove(old_image)
+                    
             request.user.user_profile_image = profile_image
             request.user.save()
             messages.success(request,"프로필 이미지가 성공적을 업로드 되었습니다.")

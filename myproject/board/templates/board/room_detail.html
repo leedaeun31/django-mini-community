@@ -3,9 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ room.name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="icon" href="data:,">
 </head>
 <body>
-    <h1>방 이름: {{ room.name }}</h1>
+    <header>
+        <h2 id="header_title">🌟 {{ room.name }}🌟</h2>
+    </header>
+    <hr>
+    <nav>
+        <ul>
+            <li><a href="/">main</a></li>
+            <li><a href="/">방 설정</a></li>
+            <li><a href="/">업로드</a></li>
+            <li><a href="/">나가기</a></li>
+            {% if user.is_authenticated %}
+                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
+            {% else %}
+                <li><a href="{% url 'user:login_page' %}">로그인</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <hr>
     <p>방에 오신 것을 환영합니다!</p>
 </body>
 </html>

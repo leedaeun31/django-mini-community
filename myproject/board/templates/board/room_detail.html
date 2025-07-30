@@ -15,8 +15,10 @@
     <nav>
         <ul>
             <li><a href="/">main</a></li>
-            <li><a href="{% url 'board:setting_room' room.slug %}">방 설정</a></li>
-            <li><a href="/">업로드</a></li>
+            {% if user == room.created_by %}
+                <li><a href="{% url 'board:setting_room' room.slug %}">방 설정</a></li>
+            {% endif %}
+            <li><a href="{% url 'board:upload_post' room.slug %}">업로드</a></li>
             <li><a href="{% url 'board:leave_room' room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
             {% if user.is_authenticated %}
                 <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
@@ -27,6 +29,29 @@
         </ul>
     </nav>
     <hr>
-    <p>방에 오신 것을 환영합니다!</p>
+    <div style="margin-top: 20px;">
+        {% if posts %}
+            {% for post in posts %}
+                <div style="border-bottom: 1px solid #ccc; padding: 10px 0;">
+                    <h3>
+                        <a href="{% url 'board:post_detail' room.slug post.id %}">{{ post.title }}</a>
+                    </h3>
+
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" style="max-height: 100px;">
+                    {% elif post.text %}
+                        <p>{{ post.text|truncatechars:50 }}</p>
+                    {% endif %}
+
+                    <small>
+                        작성자: {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}
+                    </small>
+                    <span style="float:right;">댓글 {{ post.comment_count }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>아직 게시글이 없습니다.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

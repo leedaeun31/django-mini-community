@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h2 style="text-align: center; margin-bottom: 20px;">게시글 수정</h2>
+
+    <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        <input type="text" name="title" value="{{ post.title }}" 
+               style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+
+        <textarea name="text" rows="5"
+                  style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">{{ post.text }}</textarea>
+
+        {% if post.image %}
+            <p>현재 이미지:</p>
+            <img src="{{ post.image.url }}" style="max-width: 100%; margin-bottom: 10px;">
+        {% endif %}
+
+        <label style="font-size: 14px;">이미지 교체 (선택)</label>
+        <input type="file" name="image">
+
+        <button type="submit" 
+                style="background: pink; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
+            수정 완료
+        </button>
+    </form>
+</div>
+{% endblock %}

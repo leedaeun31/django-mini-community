@@ -6,6 +6,213 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
+    <style>
+        /* 네비게이션 아래부터 스타일 적용 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* nav 아래 영역에만 배경 적용 */
+        .styled-content {
+            background: #ffffff;
+            min-height: calc(100vh - 120px); /* 헤더와 nav 높이 제외 */
+        }
+
+        /* 메인 컨테이너 */
+        .main-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* 설정 폼 스타일 */
+        .settings-form {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(21, 21, 21, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .settings-form h3 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+            text-align: center;
+        }
+
+        .form-group input[type="text"]:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #ecaddfb9 100%);
+            color: #000000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(236, 173, 223, 0.4);
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 173, 223, 0.6);
+        }
+
+        /* 참가자 목록 스타일 */
+        .participants-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .participants-section h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .participants-list {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            background: rgba(236, 173, 223, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ecaddf;
+            transition: all 0.3s ease;
+        }
+
+        .participant-item:hover {
+            background: rgba(236, 173, 223, 0.2);
+            transform: translateX(5px);
+        }
+
+        .participant-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .host-badge {
+            background: linear-gradient(135deg, #ffd900a3, #ffed4e64);
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
+        }
+
+        .kick-btn {
+            color: #e74d3cd5;
+            text-decoration: none;
+            padding: 5px 12px;
+            border-radius: 15px;
+            background: rgba(231, 76, 60, 0.1);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .kick-btn:hover {
+            background: rgba(231, 76, 60, 0.2);
+            transform: scale(1.05);
+        }
+
+        .no-participants {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+
+            #header_title {
+                font-size: 1.5rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .settings-form, .participants-section {
+                padding: 20px;
+            }
+
+            .participant-item {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #header_title {
+                font-size: 1.3rem;
+            }
+
+            .settings-form h3, .participants-section h3 {
+                font-size: 1.3rem;
+            }
+
+            .form-group input[type="text"] {
+                font-size: 0.9rem;
+            }
+
+            .save-btn {
+                font-size: 0.9rem;
+                padding: 10px 25px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -25,6 +232,51 @@
         </ul>
     </nav>
     <hr>
-    <p>방 설정 창에 오신 것을 환영합니다!</p>
+
+    <div class="styled-content">
+        <div class="main-container">
+            <!-- 설정 폼 -->
+            <div class="settings-form">
+                <h3>🛠️ 방 설정 변경</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="room-name">방 이름 변경</label>
+                        <input type="text" id="room-name" name="name" value="{{ room.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="room-password">PIN 변경 (4자리)</label>
+                        <input type="text" id="room-password" name="password" placeholder="새로운 PIN 번호 (4글자)" pattern="\d{4}" maxlength="4" required>
+                    </div>
+                    <button type="submit" class="save-btn">💾 저장하기</button>
+                </form>
+            </div>
+
+            <!-- 참가자 목록 -->
+            <div class="participants-section">
+                <h3>👥 참가자 목록</h3>
+                <div class="participants-list">
+                    {% for participant in participants %}
+                        <div class="participant-item">
+                            <span class="participant-name">{{ participant.user.username }}</span>
+                            {% if participant.user == room.created_by %}
+                                <span class="host-badge">👑 방장</span>
+                            {% else %}
+                                <a href="{% url 'board:kick_user' room.slug participant.user.id %}" 
+                                   class="kick-btn"
+                                   onclick="return confirm('{{ participant.user.username }}님을 강퇴하시겠습니까?');">
+                                   강퇴하기
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <div class="no-participants">
+                            <p>😔 참가자가 없습니다.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

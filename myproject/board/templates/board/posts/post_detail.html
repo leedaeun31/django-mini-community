@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 30px auto; padding: 20px;">
+    <h2>{{ post.title }}</h2>
+    <small>작성자: {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}</small>
+    <hr>
+
+    {% if post.image %}
+        <img src="{{ post.image.url }}" style="max-width: 100%; margin-bottom: 10px;">
+    {% endif %}
+
+    {% if post.text %}
+        <p style="font-size: 16px; line-height: 1.6;">{{ post.text }}</p>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        {% if user == post.author %}
+            <a href="{% url 'board:edit_post' post.room.slug post.id %}">수정</a>
+        {% endif %}
+        <a href="{% url 'board:delete_post' post.room.slug post.id %}" 
+        onclick="return confirm('게시글을 삭제하시겠습니까?');">삭제</a>
+        
+    </div>
+
+    <hr>
+    <h3>댓글 ({{ comments.count }})</h3>
+    {% if comments %}
+        {% for comment in comments %}
+            <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
+                <p>{{ comment.text }}</p>
+                <small>{{ comment.author.username }} · {{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                {% if request.user == comment.author %}
+                    <div style="margin-top: 5px;">
+                        <a href="{% url 'board:edit_comment' comment.id %}">수정</a>
+                        <a href="{% url 'board:delete_comment' comment.id %}" 
+                           onclick="return confirm('댓글을 삭제하시겠습니까?');">삭제</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>아직 댓글이 없습니다.</p>
+    {% endif %}
+
+    <hr>
+    <form method="post" style="margin-top: 10px;">
+        {% csrf_token %}
+        <textarea name="comment" rows="3" placeholder="댓글을 입력하세요"
+                  style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+        <button type="submit" 
+                style="background: pink; border: none; padding: 8px 12px; border-radius: 6px; margin-top: 5px;">
+            댓글 작성
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+    <h2 style="text-align: center; margin-bottom: 20px;">댓글 수정</h2>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        <textarea name="text" rows="3"
+                  style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">{{ comment.text }}</textarea>
+
+        <button type="submit" 
+                style="background: pink; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
+            수정 완료
+        </button>
+    </form>
+</div>
+{% endblock %}

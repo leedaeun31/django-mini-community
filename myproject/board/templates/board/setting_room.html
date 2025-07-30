@@ -9,14 +9,12 @@
 </head>
 <body>
     <header>
-        <h2 id="header_title">🌟 {{ room.name }}🌟</h2>
+        <h2 id="header_title">🌟 {{ room.name }} 설정🌟</h2>
     </header>
     <hr>
     <nav>
         <ul>
-            <li><a href="/">main</a></li>
-            <li><a href="{% url 'board:setting_room' room.slug %}">방 설정</a></li>
-            <li><a href="/">업로드</a></li>
+            <li><a href="{% url 'board:room_detail' room.slug %}">방으로 이동</a></li>
             <li><a href="{% url 'board:leave_room' room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
             {% if user.is_authenticated %}
                 <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
@@ -27,6 +25,6 @@
         </ul>
     </nav>
     <hr>
-    <p>방에 오신 것을 환영합니다!</p>
+    <p>방 설정 창에 오신 것을 환영합니다!</p>
 </body>
 </html>

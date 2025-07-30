@@ -9,6 +9,7 @@
     <form method="post" class="create-form">
         {% csrf_token %}
         <input type="text" name="name" placeholder="방 이름을 입력하세요" required>
+        <input type="text" name="password" placeholder="PIN 번호를 입력하세요 (4글자)"  pattern="\d{4}"  maxlength="4" required> 
         <button type="submit">방 생성하기</button>
     </form>
 </div>

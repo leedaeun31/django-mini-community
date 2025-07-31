@@ -262,7 +262,7 @@
                             {% if participant.user == room.created_by %}
                                 <span class="host-badge">👑 방장</span>
                             {% else %}
-                                <a href="{% url 'board:kick_user' room.slug participant.user.id %}" 
+                                <a href="{% url 'board:kick' room.slug participant.user.id %}" 
                                    class="kick-btn"
                                    onclick="return confirm('{{ participant.user.username }}님을 강퇴하시겠습니까?');">
                                    강퇴하기

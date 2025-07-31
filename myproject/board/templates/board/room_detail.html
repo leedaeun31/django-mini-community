@@ -6,6 +6,39 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
+    <style>
+        .image-slider {
+            position: relative;
+            max-width: 300px;
+            margin: 10px 0;
+        }
+        .image-slider img {
+            width: 100%;
+            max-height: 150px;
+            display: none;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .image-slider img.active {
+            display: block;
+        }
+        .image-slider button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .image-slider .prev {
+            left: 5px;
+        }
+        .image-slider .next {
+            right: 5px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -29,6 +62,15 @@
         </ul>
     </nav>
     <hr>
+
+     <div style="margin-top: 10px; text-align: center;">
+        <input type="text" id="roomUrl" value="{{ request.build_absolute_uri }}" readonly style="width: 60%; padding: 5px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+
+        <button onclick="copyRoomUrl()" style="background: pink; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
+            URL 복사
+        </button>
+    </div>
+    
     <div style="margin-top: 20px;">
         {% if posts %}
             {% for post in posts %}
@@ -37,8 +79,16 @@
                         <a href="{% url 'board:post_detail' room.slug post.id %}">{{ post.title }}</a>
                     </h3>
 
-                    {% if post.image %}
-                        <img src="{{ post.image.url }}" style="max-height: 100px;">
+                    {% if post.images.all %}
+                        <div class="image-slider">
+                            {% for img in post.images.all %}
+                                <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}">
+                            {% endfor %}
+                            {% if post.images.count > 1 %}
+                                <button class="prev">◀</button>
+                                <button class="next">▶</button>
+                            {% endif %}
+                        </div>
                     {% elif post.text %}
                         <p>{{ post.text|truncatechars:50 }}</p>
                     {% endif %}
@@ -53,5 +103,36 @@
             <p>아직 게시글이 없습니다.</p>
         {% endif %}
     </div>
+
+    <script>
+
+        function copyRoomUrl() {
+            const roomUrlInput = document.getElementById("roomUrl");
+            roomUrlInput.select();
+            document.execCommand("copy");
+
+            alert("방 링크가 복사되었습니다! 📋");
+        }
+        // 이미지 슬라이더 기능
+        document.querySelectorAll(".image-slider").forEach(slider => {
+            const images = slider.querySelectorAll("img");
+            const prev = slider.querySelector(".prev");
+            const next = slider.querySelector(".next");
+            let current = 0;
+
+            if (prev && next) {
+                prev.addEventListener("click", () => {
+                    images[current].classList.remove("active");
+                    current = (current - 1 + images.length) % images.length;
+                    images[current].classList.add("active");
+                });
+                next.addEventListener("click", () => {
+                    images[current].classList.remove("active");
+                    current = (current + 1) % images.length;
+                    images[current].classList.add("active");
+                });
+            }
+        });
+    </script>
 </body>
 </html>

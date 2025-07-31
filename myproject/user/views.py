@@ -19,6 +19,12 @@ def mypage(request):
         username = request.POST.get("username")
 
         if username:
+            # username이 코난이면 기존 이미지 삭제
+            if "코난" in username or "탐정" in username:
+                if request.user.user_profile_image:
+                    request.user.user_profile_image.delete(save=False)
+                    request.user.user_profile_image = None
+
             request.user.username = username
             request.user.save()
             messages.success(request, "이름이 성공적으로 변경되었습니다!")
@@ -27,17 +33,13 @@ def mypage(request):
         profile_image = request.FILES.get("profile_image")
 
         if profile_image:
-            if request.user.user_profile_image:
-                old_image=request.user.user_profile_image.path
-                if os.path.exists(old_image):
-                    os.remove(old_image)
-                    
             request.user.user_profile_image = profile_image
             request.user.save()
-            messages.success(request,"프로필 이미지가 성공적을 업로드 되었습니다.")
+            messages.success(request, "프로필 이미지가 성공적으로 업로드되었습니다.")
             return redirect("user:mypage")
-        
+
     return render(request, 'mypage.html')
+
 
 def login_page(request):
     return render(request, 'login.html')

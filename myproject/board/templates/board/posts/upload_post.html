@@ -1,24 +1,81 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ room.name }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    <header>
+        <h2 id="header_title">🌟 {{ room.name }} 게시물 업로드 페이지🌟</h2>
+    </header>
+    <hr>
+    <nav>
+        <ul>
+            <li><a href="{% url 'board:room_detail' room.slug %}">방으로 이동</a></li>
+            {% if user == room.created_by %}
+                <li><a href="{% url 'board:setting_room' room.slug %}">방 설정</a></li>
+            {% endif %}
+            <li><a href="{% url 'board:leave_room' room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
+            {% if user.is_authenticated %}
+                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
+            {% else %}
+                <li><a href="{% url 'user:login_page' %}">로그인</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <hr>
+    <div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+        <h2 style="text-align: center; margin-bottom: 20px;">게시글 업로드</h2>
 
-{% block content %}
-<div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-    <h2 style="text-align: center; margin-bottom: 20px;">게시글 업로드</h2>
+        <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            <input type="text" name="title" placeholder="제목을 입력하세요" 
+                style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
 
-    <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-        {% csrf_token %}
-        <input type="text" name="title" placeholder="제목을 입력하세요" 
-               style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+            <textarea name="text" placeholder="글 내용을 입력하세요 (선택사항)" rows="5"
+                    style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
 
-        <textarea name="text" placeholder="글 내용을 입력하세요 (선택사항)" rows="5"
-                  style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
+            <input type="file" id="imageInput" name="images" multiple accept="image/*">
+            <div id="previewContainer" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
 
-        <label style="font-size: 14px;">사진 업로드 (선택)</label>
-        <input type="file" name="image">
+            <button type="submit" 
+                    style="background: pink; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
+                업로드
+            </button>
+        </form>
+    </div>
+</body>
+</html>
 
-        <button type="submit" 
-                style="background: pink; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
-            등록하기
-        </button>
-    </form>
-</div>
-{% endblock %}
+<script>
+    const input = document.getElementById('imageInput');
+    const previewContainer = document.getElementById('previewContainer');
+
+    document.getElementById('imageInput').addEventListener('change', function() {
+        if (this.files.length > 5) {
+            alert("최대 5장까지 업로드할 수 있습니다.");
+            this.value = "";  // 선택 취소
+        }
+    });
+
+
+    // ⭐ 선택한 이미지 미리보기
+    input.addEventListener('change', () => {
+        previewContainer.innerHTML = '';
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.margin = '5px';
+                previewContainer.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+</script>

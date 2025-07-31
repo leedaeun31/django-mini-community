@@ -27,14 +27,18 @@
             <!-- 프로필 이미지 -->
             {% if user.user_profile_image %}
                 <img src="{{ user.user_profile_image.url }}" 
-                     alt="프로필 이미지" class="profile-img" onclick="triggerImageUpload()">
-            {% elif "코난" in user.username or "탐정" in user.username %}
+                    alt="프로필 이미지" class="profile-img" onclick="triggerImageUpload()">
+            {% elif user.username and "코난" in user.username %}
                 <img src="{% static 'images/코난.jpg' %}" 
-                     alt="기본 이미지_코난" class="profile-img" onclick="triggerImageUpload()">
+                    alt="기본 이미지_코난" class="profile-img" onclick="triggerImageUpload()">
+            {% elif user.username and "탐정" in user.username %}
+                <img src="{% static 'images/코난.jpg' %}" 
+                    alt="기본 이미지_코난" class="profile-img" onclick="triggerImageUpload()">
             {% else %}
                 <img src="{% static 'images/default_profile.png' %}" 
-                     alt="기본 이미지" class="profile-img" onclick="triggerImageUpload()">
+                    alt="기본 이미지" class="profile-img" onclick="triggerImageUpload()">
             {% endif %}
+
 
             <!-- 프로필 이미지 변경 -->
             <form method="post" enctype="multipart/form-data" id="image-form">
@@ -58,13 +62,13 @@
 
         <!-- 나머지 정보 -->
         <div class="info-section">
-            <p>성별: <span>{% if user.user_gender == 'F' %}여성{% else %}남성{% endif %}</span></p>
+            <p>성별: <span>{% if user.user_gender == 'F' %}여성{% elif user.user_gender == 'M' %}남성 {% else %} 성별 없음 {% endif %}</span></p>
             <p>이메일: <span>{{ user.email }}</span></p>
             <p>휴대폰 번호: <span>{{ user.user_phone_num }}</span></p>
         </div>
 
         <!-- 메인으로 이동 -->
-        <a href="{% url 'main_page:main' %}" class="main-link">메인으로 돌아가기</a>
+        <button type="button" onclick="history.back()"  class="main-link"> 이전 페이지로 돌아가기 </button>
     </div>
 </body>
 </html>

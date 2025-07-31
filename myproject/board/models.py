@@ -33,7 +33,6 @@ class Post(models.Model):
     author=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # 방에서 회원 나가면 게시글도 삭제
     title=models.CharField(max_length=100) #제목
     text=models.TextField(blank=True,null=True) #게시글
-    image=models.ImageField(upload_to="posts/images/",blank=True,null=True) #게시글 이미지
     created_at=models.DateTimeField(auto_now_add=True) # 게시글 처음 작성 시간
     updated_at=models.DateTimeField(auto_now=True) # 게시글 수정 시 자동 업데이트
 
@@ -45,6 +44,15 @@ class Post(models.Model):
         return self.comments.count()  # 게시물 댓글의 개수
 # related_name : 역참조 이름(room.posts 또는 post.comments)으로 데이터를 쉽게 가져올 수 있게 함.
 # 댓글 
+
+# post 하나에 여러 장의 이미지 연결 
+class PostImage(models.Model):
+    post=models.ForeignKey(Post,on_delete=models.CASCADE, related_name='images')
+    image=models.ImageField(upload_to="posts/images/")
+
+    def __str__(self):
+        return f"Image for {self.post.title}"
+    
 class Comment(models.Model):
     post=models.ForeignKey(Post,on_delete=models.CASCADE, related_name='comments')
     author=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

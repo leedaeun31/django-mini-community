@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Room, UserRoom
+from .models import Room, UserRoom, PostImage
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .models import Post, Comment
@@ -15,15 +15,24 @@ def upload_post(request, slug):
     if request.method == "POST":
         title = request.POST.get("title")
         text = request.POST.get("text")
-        image = request.FILES.get("image")
+        images = request.FILES.getlist("images") # getlist로 이미지를 리스트 형식으로 여러장 업로드 가능하게
 
-        if not text and not image:
+        if len(images)>5:
+                messages.error(request,"사진은 최대 5장까지 업로드 가능합니다.")
+                return redirect("board:upload_post",slug=slug)
+        
+        if not text and not images:
             messages.error(request, "글 또는 사진을 업로드 해주세요")
             return redirect("board:upload_post", slug=slug)
-        Post.objects.create(room=room, author=request.user, title=title, text=text, image=image)
+        
+        post=Post.objects.create(room=room, author=request.user, title=title, text=text)
+        
+        for img in images:
+            PostImage.objects.create(post=post,image=img)
+        
         messages.success(request, "게시글 등록이 완료되었습니다.")
         return redirect("board:room_detail", slug=slug)
-    return render(request, "board/posts/upload_post.html", {"room": room})   # ✅ 경로 수정
+    return render(request, "board/posts/upload_post.html", {"room": room}) 
 
 @login_required  # 게시글 댓글 작성
 def post_detail(request, slug, post_id):
@@ -32,10 +41,27 @@ def post_detail(request, slug, post_id):
 
     if request.method == "POST":
         text = request.POST.get("comment")
-        if text:
-            Comment.objects.create(post=post, author=request.user, text=text)
-            return redirect("board:post_detail", slug=slug, post_id=post.id)
-    return render(request, "board/posts/post_detail.html", {"post": post, "comments": comments})   # ✅ 경로 수정
+        action=request.POST.get("action")
+        comment_id=request.POST.get("comment_id")
+
+        if action == "create":
+            text = request.POST.get("comment")
+            if text.strip():
+                Comment.objects.create(post=post, author=request.user, text=text)
+            
+        elif action=="edit":
+            comment=get_object_or_404(Comment,id=comment_id)
+
+            if request.user==comment.author:
+                comment.text=request.POST.get("comment")
+                comment.save()
+        elif action=="delete":
+            comment=get_object_or_404(Comment,id=comment_id)
+            if request.user==comment.author:
+                comment.delete()
+
+        return redirect("board:post_detail", slug=slug, post_id=post.id)
+    return render(request, "board/posts/post_detail.html", {"post": post, "comments": comments}) 
 
 
 @login_required  # 게시물 수정
@@ -50,15 +76,17 @@ def edit_post(request, slug, post_id):
     if request.method == "POST":
         title = request.POST.get('title')
         text = request.POST.get('text')
-        image = request.FILES.get('image')
+        images = request.FILES.getlist('images')
         if not title:
             messages.error(request, "제목을 입력하세요")
             return redirect("board:edit_post", slug=slug, post_id=post.id)
         post.title = title
         post.text = text
 
-        if image:
-            post.image = image
+        if images:
+            post.images.all().delete()
+            for img in images:
+                PostImage.objects.create(post=post,image=img)
 
         post.save()
         messages.success(request, "게시글이 수정되었습니다.")
@@ -75,38 +103,6 @@ def delete_post(request, slug, post_id):
     post.delete()
     messages.success(request, "게시글 삭제가 완료되었습니댜.")
     return redirect("board:room_detail", slug=slug)
-
-
-@login_required
-def edit_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
-
-    if request.user != comment.author:
-        messages.error(request, "댓글 작성자만이 댓글을 수정할 수 있습니다.")
-        return redirect('board:post_detail', slug=comment.post.room.slug, post_id=comment.post.id)
-
-    if request.method == "POST":
-        text = request.POST.get("text")
-        if text:
-            comment.text = text
-            comment.save()
-            messages.success(request, "댓글이 수정되었습니다.")
-        return redirect("board:post_detail", slug=comment.post.room.slug, post_id=comment.post.id)
-    return render(request, "board/posts/edit_comment.html", {"comment": comment})   # ✅ 경로 수정
-
-
-@login_required  # 댓글 삭제
-def delete_comment(request, comment_id):
-    comment = get_object_or_404(Comment, id=comment_id)
-
-    if request.user != comment.author:
-        messages.error(request, "댓글 작성자만이 댓글을 삭제할 수 있습니다.")
-        return redirect("board:post_detail", slug=comment.post.room.slug, post_id=comment.post.id)
-
-    comment.delete()
-    messages.success(request, "댓글이 삭제되었습니다.")
-    return redirect("board:post_detail", slug=comment.post.room.slug, post_id=comment.post.id)
-
 
 @login_required
 def setting_room(request, slug):

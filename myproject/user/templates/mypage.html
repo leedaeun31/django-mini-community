@@ -64,7 +64,6 @@
         <div class="info-section">
             <p>성별: <span>{% if user.user_gender == 'F' %}여성{% elif user.user_gender == 'M' %}남성 {% else %} 성별 없음 {% endif %}</span></p>
             <p>이메일: <span>{{ user.email }}</span></p>
-            <p>휴대폰 번호: <span>{{ user.user_phone_num }}</span></p>
         </div>
 
         <!-- 메인으로 이동 -->

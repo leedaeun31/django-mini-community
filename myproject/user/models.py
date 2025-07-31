@@ -14,7 +14,7 @@ def user_profile_image_path(instance, filename):
 class User(AbstractUser):
     nickname = models.CharField(max_length=30)
     user_gender = models.CharField(max_length=10)
-    user_phone_num = models.CharField(max_length=20)
+    #user_phone_num = models.CharField(max_length=20)
     user_profile_image = models.ImageField(upload_to="user_profile_image_path", blank=True, default="profile_images/default_profile.png")
     #social_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
     #birth = models.DateField(null=True, blank=True)

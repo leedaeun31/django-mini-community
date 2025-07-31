@@ -95,15 +95,15 @@ def naver_login_callback(request):
     email = response.get("email")
     name = response.get("name")
     profile_image_url = response.get("profile_image")
-    birth = response.get("birthday")
-    birth_year = response.get("birthyear")
-    phone_number = response.get("mobile")
+    #birth = response.get("birthday")
+    #birth_year = response.get("birthyear")
+    #phone_number = response.get("mobile")
     gender_map = {"M": "M", "F": "F"}
     user_gender = gender_map.get(response.get("gender"), "U")
 
-    full_birth = None
-    if birth and birth_year:
-        full_birth = f"{birth_year}-{birth[:2]}-{birth[3:]}"
+    # full_birth = None
+    # if birth and birth_year:
+    #     full_birth = f"{birth_year}-{birth[:2]}-{birth[3:]}"
 
     try:
         user = User.objects.get(email=email)
@@ -115,7 +115,7 @@ def naver_login_callback(request):
             nickname=name,
             #birth=full_birth,
             user_gender=user_gender,
-            user_phone_num=phone_number,
+            #user_phone_num=phone_number,
         )
         if profile_image_url:
             image_response = requests.get(profile_image_url)

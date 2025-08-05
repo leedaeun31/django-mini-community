@@ -4,7 +4,12 @@ from .models import Room, UserRoom, PostImage
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .models import Post, Comment
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+import json
+
 User = get_user_model()
+
 
 # Create your views here.
 
@@ -115,7 +120,8 @@ def setting_room(request, slug):
     if request.method == "POST":
         new_name = request.POST.get("name")
         new_password = request.POST.get("password")
-
+        room.require_pin_everytime = bool(request.POST.get("require_pin_everytime"))
+        
         if new_name:
             room.name = new_name
             messages.success(request, "방 이름이 변경되었습니다.")
@@ -175,37 +181,56 @@ def create_room(request):
     # GET 요청 시 방 생성 폼 표시
     return render(request, 'board/create_room.html')
 
+from django.views.decorators.http import require_POST
+
+@require_POST
+@login_required
+def check_pin(request, slug):
+    room = get_object_or_404(Room, slug=slug)
+    data = json.loads(request.body)
+    pin = data.get("pin")
+
+    if pin == room.password:
+        # 자동 인증 모드일 때 세션에 저장
+        if not room.require_pin_everytime:
+            if "authenticated_rooms" not in request.session:
+                request.session["authenticated_rooms"] = []
+            if str(slug) not in request.session["authenticated_rooms"]:
+                request.session["authenticated_rooms"].append(str(slug))
+                request.session.modified = True
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False})
+
 
 @login_required
 def room_detail(request, slug):
     room = get_object_or_404(Room, slug=slug)
+    # 체크박스 해제된 경우는 세션 인증 있으면 바로 입장 가능
+    if room.password and not room.require_pin_everytime:
+        authenticated_rooms = request.session.get("authenticated_rooms", [])
+        if str(slug) not in authenticated_rooms:
+            return redirect("main_page:main")  # 세션 인증 없으면 메인으로 보냄
 
-    # 유저 방 인증 체크
-    try:
-        user_room = UserRoom.objects.get(user=request.user, room=room)
-        if not room.require_pin_everytime and user_room.authenticated:
-            posts = room.posts.all().order_by("-created_at")  # 게시글 가져오기
-            return render(request, "board/room_detail.html", {"room": room, "posts": posts})
-    except UserRoom.DoesNotExist:
-        user_room = None
-
-    # PIN 입력 처리
-    if request.method == "POST":
-        pin = request.POST.get("password", "")
-        if room.password and room.password != pin:
-            messages.error(request, "PIN이 올바르지 않습니다.")
-            return redirect("board:room_detail", slug=slug)
-
-        if user_room:
-            user_room.authenticated = True
-            user_room.save()
-        else:
-            UserRoom.objects.create(user=request.user, room=room, authenticated=True)
-
-        posts = room.posts.all().order_by("-created_at")
-        return render(request, "board/room_detail.html", {"room": room, "posts": posts})
-
-    # GET 요청 시
-    posts = room.posts.all().order_by("-created_at")
+    posts = Post.objects.filter(room=room).order_by("-created_at")
     return render(request, "board/room_detail.html", {"room": room, "posts": posts})
 
+@login_required
+def check_session(request, slug):
+    authenticated_rooms = request.session.get("authenticated_rooms", [])
+    is_authenticated = str(slug) in authenticated_rooms
+    return JsonResponse({"authenticated": is_authenticated})
+
+ # [방 클릭] 
+#    ↓
+# [JS] openPinModal() → 백엔드로 /check_session/ 요청
+#    ↓
+# [백엔드] 세션에 인증된 slug가 있으면 → True 반환
+#    ↓
+# [JS]
+#  - True: 바로 입장 (window.location.href)
+#  - False: PIN 모달 열고 입력 받기
+#    ↓
+# [PIN 입력 후]
+#  → /check_pin/으로 POST 요청
+#    ↓
+# [백엔드] PIN 일치 + 옵션 확인 → 세션에 slug 저장

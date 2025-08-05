@@ -20,7 +20,7 @@
         <button class="close-btn" id="closeModal">&times;</button>
         <h2>방이 생성되었습니다!</h2>
         <p id="roomLink"></p>
-        <button class="copy-btn" id="copyLink">링크 복사</button>
+        <button class="copy-btn" id="copyLink">초대코드 복사</button>
     </div>
 </div>
 
@@ -145,26 +145,32 @@
 {% endif %}
 
 <script>
+document.addEventListener("DOMContentLoaded", function () {
     {% if room %}
     const modal = document.getElementById('roomModal');
     const closeBtn = document.getElementById('closeModal');
     const copyBtn = document.getElementById('copyLink');
     const roomLinkElem = document.getElementById('roomLink');
 
-    const roomUrl = "{{ request.get_host }}{% url 'board:room_detail' room.slug %}";
-    roomLinkElem.innerText = roomUrl;
+    // 🔹 전체 URL 대신 UUID만 표시
+    const inviteCode = "{{ room.slug }}";
+    roomLinkElem.innerText = inviteCode;
 
+    // 모달 열기
     modal.style.display = 'flex';
 
+    // 닫기 버튼 이벤트
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 
+    // 복사 버튼 이벤트 (UUID 복사)
     copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(roomUrl)
-            .then(() => alert('링크가 복사되었습니다!'))
+        navigator.clipboard.writeText(inviteCode)
+            .then(() => alert('초대코드가 복사되었습니다!'))
             .catch(err => console.error('복사 실패', err));
     });
     {% endif %}
+});
 </script>
 {% endblock %}

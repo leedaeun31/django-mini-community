@@ -2,45 +2,77 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-    <div style="max-width: 800px; margin: 30px auto; padding: 20px;">
-        <!-- 참가 링크 입력 -->
-        <div style="margin-bottom: 20px;">
-            <label style="font-size: 18px; font-weight: bold;">참가 링크:</label>
-            <form method="post" style="display: flex; gap: 10px; margin-top: 10px;">
-                {% csrf_token %}
-                <input type="text" name="link" placeholder="방 링크 또는 UUID 입력"
-                    style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
-                <button type="submit"
-                        style="background: #f8daf2b9; color: black; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer;">
-                    등록
-                </button>
-            </form>
-        </div>
+<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+    <!-- 참가 링크 입력 -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 18px; font-weight: bold;">초대코드:</label>
+        <form method="post" style="display: flex; gap: 10px; margin-top: 10px;">
+            {% csrf_token %}
+            <input type="text" name="link" placeholder="초대코드"
+                style="flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+            <button type="submit"
+                style="background: #f8daf2b9; color: black; border: none; border-radius: 6px; padding: 10px 20px; cursor: pointer;">
+                참가
+            </button>
+        </form>
+    </div>
 
-        <!-- 참가중인 방 -->
-        <h2 style="font-size: 20px; font-weight: bold; margin: 20px 0;">참가 중인 방</h2>
-        {% if rooms %}
+    <!-- 참가중인 방 -->
+    <h2 style="font-size: 20px; font-weight: bold; margin: 20px 0;">참가 중인 방</h2>
+    {% if rooms %}
+    <div style="display: flex; flex-direction: column; gap: 15px;">
         <div style="display: flex; flex-direction: column; gap: 15px;">
-            <div style="display: flex; flex-direction: column; gap: 15px;">
             {% for room in rooms %}
-                <a href="{% url 'board:room_detail' room.slug %}"
-                class="room-card"
-                style="border: 1px solid #e5e4e4; border-radius: 10px; padding: 20px;
-                        background: #f8daf2b9; display: block; text-decoration: none; color: black;
-                        transition: transform 0.2s ease;">
+                <a href="javascript:void(0);"
+                   class="room-card"
+                   onclick="openPinModal('{{ room.slug }}', {% if room.password %}true{% else %}false{% endif %})"
+                   style="border: 1px solid #e5e4e4; border-radius: 10px; padding: 20px;
+                          background: #f8daf2b9; display: block; text-decoration: none; color: black;
+                          transition: transform 0.2s ease;">
                     {{ room.name }}
                 </a>
             {% endfor %}
-    </div>
-
         </div>
-        {% else %}
-        <p style="color: f8daf2b9;">아직 참가한 방이 없습니다.</p>
-        {% endif %}
+
+        <!-- PIN 입력 모달 -->
+        <div id="pinModal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h3>🔐 방 PIN 입력</h3>
+                <input type="password" id="pinInput" maxlength="4" placeholder="4자리 PIN 입력"
+                       style="padding: 8px; margin-bottom: 10px;">
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button onclick="submitPin()" style="background: #ecaddfb9; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer;">확인</button>
+                    <button onclick="closePinModal()" style="background: #ccc; padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer;">취소</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% else %}
-        <h5 id="header_title">로그인 후 여러분만의 소통 게시판을 만들어보세요!</h5>
+        <p style="color: #f8daf2b9;">아직 참가한 방이 없습니다.</p>
+    {% endif %}
+</div>
+{% else %}
+    <h5 id="header_title">로그인 후 여러분만의 소통 게시판을 만들어보세요!</h5>
 {% endif %}
+
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+</style>
 
 <script>
     // hover 효과
@@ -54,5 +86,77 @@
             card.style.background = '#f8daf2b9';
         });
     });
+
+    let currentRoomSlug = "";
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function openPinModal(slug, hasPassword) {
+        // 비밀번호가 없는 방이면 바로 입장
+        if (!hasPassword) {
+            window.location.href = `/board/${slug}/`;
+            return;
+        }
+
+        // 세션에 인증된 방이면 PIN 없이 바로 입장
+        fetch(`/board/${slug}/check_session/`, {
+            method: "GET",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.authenticated) {
+                window.location.href = `/board/${slug}/`;
+            } else {
+                // 세션에 없으면 PIN 입력창 띄우기
+                currentRoomSlug = slug;
+                document.getElementById('pinModal').style.display = 'flex';
+            }
+        });
+    }
+
+    function closePinModal() {
+        document.getElementById('pinModal').style.display = 'none';
+    }
+
+    function submitPin() {
+        const pin = document.getElementById("pinInput").value;
+        if (pin.length !== 4) {
+            alert("4자리 PIN을 입력해주세요!");
+            return;
+        }
+
+        fetch(`/board/${currentRoomSlug}/check_pin/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ pin })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = `/board/${currentRoomSlug}/`;
+            } else {
+                alert("PIN 번호가 올바르지 않습니다.");
+            }
+        });
+    }
 </script>
 {% endblock %}

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
     <style>
-        /* 네비게이션 아래부터 스타일 적용 */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -15,20 +14,17 @@
             min-height: 100vh;
         }
 
-        /* nav 아래 영역에만 배경 적용 */
         .styled-content {
             background: #ffffff;
-            min-height: calc(100vh - 120px); /* 헤더와 nav 높이 제외 */
+            min-height: calc(100vh - 120px);
         }
 
-        /* 메인 컨테이너 */
         .main-container {
             max-width: 800px;
             margin: 40px auto;
             padding: 0 20px;
         }
 
-        /* 설정 폼 스타일 */
         .settings-form {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
@@ -92,7 +88,6 @@
             box-shadow: 0 6px 20px rgba(236, 173, 223, 0.6);
         }
 
-        /* 참가자 목록 스타일 */
         .participants-section {
             background: rgba(255, 255, 255, 0.95);
             padding: 30px;
@@ -167,51 +162,6 @@
             font-style: italic;
             padding: 20px;
         }
-
-        /* 반응형 디자인 */
-        @media (max-width: 768px) {
-            .main-container {
-                margin: 20px auto;
-                padding: 0 15px;
-            }
-
-            #header_title {
-                font-size: 1.5rem;
-            }
-
-            nav ul {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .settings-form, .participants-section {
-                padding: 20px;
-            }
-
-            .participant-item {
-                padding: 12px 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #header_title {
-                font-size: 1.3rem;
-            }
-
-            .settings-form h3, .participants-section h3 {
-                font-size: 1.3rem;
-            }
-
-            .form-group input[type="text"] {
-                font-size: 0.9rem;
-            }
-
-            .save-btn {
-                font-size: 0.9rem;
-                padding: 10px 25px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -247,6 +197,13 @@
                     <div class="form-group">
                         <label for="room-password">PIN 변경 (4자리)</label>
                         <input type="text" id="room-password" name="password" placeholder="새로운 PIN 번호 (4글자)" pattern="\d{4}" maxlength="4">
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="require_pin_everytime"
+                                {% if room.require_pin_everytime %}checked{% endif %}>
+                            매번 PIN 입력 
+                        </label><br>
                     </div>
                     <button type="submit" class="save-btn">💾 저장하기</button>
                 </form>

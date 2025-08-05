@@ -9,7 +9,7 @@ class UserRoom(models.Model):
     user=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     room=models.ForeignKey('Room',on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
-    authenticated=models.BooleanField(default=False) # Pin 인증 여부 확인
+    authenticated=models.BooleanField(default=True) # Pin 인증 여부 확인
     class Meta:
          unique_together = ('user', 'room') 
     def __str__(self):
@@ -18,7 +18,7 @@ class UserRoom(models.Model):
 # 기본 Room 설정     
 class Room(models.Model):
     name=models.CharField(max_length=100)
-    require_pin_everytime = models.BooleanField(default=True) # 비밀번호 매번 입력 
+    require_pin_everytime = models.BooleanField(default=True) # 비밀번호 매번 입력, True는 매번 입력
     slug=models.UUIDField(default=uuid.uuid4,unique=True) #초대링크 생성 / unique=True => 중복방지
     created_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # 방 생성자 
     created_at=models.DateTimeField(auto_now_add=True) # 날짜 및 시간 설정 / auto_now_add= => 자동으로 현재 날짜 및 시간 저장

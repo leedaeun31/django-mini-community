@@ -64,10 +64,10 @@
     <hr>
 
      <div style="margin-top: 10px; text-align: center;">
-        <input type="text" id="roomUrl" value="{{ request.build_absolute_uri }}" readonly style="width: 60%; padding: 5px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+        <input type="text" id="roomUrl" value="{{room.slug}}" readonly style="width: 60%; padding: 5px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
 
         <button onclick="copyRoomUrl()" style="background: pink; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
-            URL 복사
+            초대코드 복사
         </button>
     </div>
     

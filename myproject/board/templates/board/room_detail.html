@@ -133,32 +133,46 @@
                 });
             }
         });
-    </script>
-    {% if require_pin %}
-    <script>
-        const pin = prompt("이 방은 비밀번호가 필요합니다. PIN을 입력해주세요:");
-        if (pin !== null) {
-            fetch("{% url 'board:check_pin' room.slug %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}",
-                },
-                body: JSON.stringify({ pin: pin })
-            }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert("PIN이 올바르지 않습니다.");
-                    window.location.href = "{% url 'main_page:main' %}";
-                }
-            });
-        } else {
-            window.location.href = "{% url 'main_page:main' %}";
-        }
-    </script>
-    {% endif %}
 
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     const roomSlug = "{{ room.slug }}";
+
+        //     fetch(`/board/${roomSlug}/check_session/`, {
+        //         method: "GET",
+        //         headers: {
+        //             "X-CSRFToken": "{{ csrf_token }}",
+        //         },
+        //     })
+        //     .then(res => res.json())
+        //     .then(data => {
+        //         if (!data.authenticated) {
+        //             const pin = prompt("이 방은 비밀번호가 필요합니다. PIN을 입력해주세요:");
+        //             if (pin !== null) {
+        //                 fetch("{% url 'board:check_pin' room.slug %}", {
+        //                     method: "POST",
+        //                     headers: {
+        //                         "Content-Type": "application/json",
+        //                         "X-CSRFToken": "{{ csrf_token }}",
+        //                     },
+        //                     body: JSON.stringify({ pin: pin })
+        //                 })
+        //                 .then(response => response.json())
+        //                 .then(data => {
+        //                     if (data.success) {
+        //                         window.location.reload();
+        //                     } else {
+        //                         alert("PIN이 올바르지 않습니다.");
+        //                         window.location.href = "{% url 'main_page:main' %}";
+        //                     }
+        //                 });
+        //             } else {
+        //                 window.location.href = "{% url 'main_page:main' %}";
+        //             }
+        //         }
+        //         // 인증이 되어 있으면 아무 일도 하지 않고 페이지 그대로 유지
+        //     });
+        // });
+    </script>
+    
 </body>
 </html>

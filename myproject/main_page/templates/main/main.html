@@ -105,11 +105,6 @@
     }
 
     function openPinModal(slug, hasPassword) {
-        // 비밀번호가 없는 방이면 바로 입장
-        if (!hasPassword) {
-            window.location.href = `/board/${slug}/`;
-            return;
-        }
 
         // 세션에 인증된 방이면 PIN 없이 바로 입장
         fetch(`/board/${slug}/check_session/`, {

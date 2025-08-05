@@ -18,6 +18,7 @@ class UserRoom(models.Model):
 # 기본 Room 설정     
 class Room(models.Model):
     name=models.CharField(max_length=100)
+    pin_updated_at = models.DateTimeField(auto_now=True) 
     require_pin_everytime = models.BooleanField(default=True) # 비밀번호 매번 입력, True는 매번 입력
     slug=models.UUIDField(default=uuid.uuid4,unique=True) #초대링크 생성 / unique=True => 중복방지
     created_by=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # 방 생성자 
@@ -26,7 +27,14 @@ class Room(models.Model):
     # 관리자 터미널에서 객체 출력시 보여줄 문자열 지정 
     def __str__(self):
         return self.name
-    
+
+class UserRoom(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    authenticated = models.BooleanField(default=False)
+    class Meta:
+        unique_together = ('user', 'room')
+
 # 게시물 업로드
 class Post(models.Model):
     room=models.ForeignKey(Room,on_delete=models.CASCADE, related_name="posts") # 방 삭제시 게시글도 삭제

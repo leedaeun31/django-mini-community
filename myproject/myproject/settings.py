@@ -22,6 +22,7 @@ NAVER_CALLBACK_URL=os.getenv("NAVER_CALLBACK_URL")
 
 AUTH_USER_MODEL = 'user.User'
 
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 #
 from pathlib import Path
 

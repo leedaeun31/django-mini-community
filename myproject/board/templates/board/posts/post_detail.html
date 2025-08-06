@@ -7,36 +7,401 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
     <style>
+         #header_title {
+            text-align: center;
+            font-size: 28px;
+            margin: 25px 0;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px;
+            box-sizing: border-box;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
+        }
+        
+        body {
+            background-color: #ffffff;
+        }
+        
+        /* 메인 컨테이너 스타일링 */
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(236, 173, 223, 0.2);
+            border: 1px solid rgba(236, 173, 223, 0.3);
+        }
+
+        /* 게시물 헤더 */
+        .post-header {
+            margin-bottom: 25px;
+        }
+
+        .post-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #ecaddfb9;
+            padding-bottom: 10px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(236, 173, 223, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ecaddfb9;
+        }
+
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid #ecaddfb9;
+            box-shadow: 0 2px 8px rgba(236, 173, 223, 0.3);
+        }
+
+        .author-details {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* 이미지 슬라이더 개선 */
         .image-slider {
             position: relative;
-            max-width: 500px;
-            margin: 10px auto;
+            max-width: 100%;
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+          
         }
+
         .image-slider img {
             width: 100%;
-            max-height: 250px;
+            max-height: 400px;
             display: none;
             object-fit: cover;
-            border-radius: 6px;
+            transition: opacity 0.3s ease;
         }
+
         .image-slider img.active {
             display: block;
         }
+
         .image-slider button {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
+            background: rgba(247, 247, 247, 0.8);
+            color: rgb(0, 0, 0);
+            border: none;
+            padding: 6px 8px;
+            cursor: pointer;
+            font-size: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10x rgba(0,0,0,0.2);
+        }
+
+        .image-slider button:hover {
+            background: #f1c7e9b9;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .image-slider .prev {
+            left: 15px;
+        }
+
+        .image-slider .next {
+            right: 15px;
+        }
+
+        /* 게시물 내용 */
+        .post-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #ecaddfb9;
+        }
+
+        /* 액션 버튼들 */
+        .post-actions {
+            margin: 25px 0;
+            text-align: right;
+        }
+
+        .post-actions a {
+            text-decoration: none;
+            color: #333;
+            background: #ecaddfb9;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-left: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .post-actions a:hover {
+            background: rgba(253, 107, 222, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.4);
+        }
+
+        /* 댓글 섹션 */
+        .comments-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(236, 173, 223, 0.3);
+        }
+
+        .comments-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-count {
+            background: #ecaddfb9;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 개별 댓글 스타일 */
+        .comment-item {
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ecaddfb9;
+            transition: all 0.3s ease;
+        }
+
+        .comment-item:hover {
+            background: rgba(236, 173, 223, 0.1);
+            transform: translateX(5px);
+        }
+
+        .comment-author {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .comment-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-actions a,
+        .comment-actions button {
+            font-size: 13px;
+            color: #666;
+            background: rgba(236, 173, 223, 0.2);
+            padding: 4px 10px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .comment-actions a:hover,
+        .comment-actions button:hover {
+            background: #ecaddfb9;
+            color: white;
+        }
+
+        .delete-btn {
+            color: #e74c3c !important;
+            background: rgba(231, 76, 60, 0.1) !important;
+        }
+
+        .delete-btn:hover {
+            background: rgba(231, 76, 60, 0.2) !important;
+            color: #c0392b !important;
+        }
+
+        /* 댓글 입력 폼 */
+        .comment-form {
+            background: rgba(236, 173, 223, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 2px dashed rgba(236, 173, 223, 0.3);
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.6;
+            resize: vertical;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .comment-form textarea:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+        }
+
+        .comment-form button {
+            background: #ecaddfb9;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 10px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
         }
-        .image-slider .prev {
-            left: 5px;
+
+        .comment-form button:hover {
+            background: rgba(253, 107, 222, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
         }
-        .image-slider .next {
-            right: 5px;
+
+        /* 댓글 수정 모드 */
+        .edit-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecaddfb9;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .edit-submit {
+            background: #ecaddfb9 !important;
+            color: white !important;
+            padding: 6px 12px !important;
+            border-radius: 15px !important;
+        }
+
+        .edit-submit:hover {
+            background: rgba(245, 149, 224, 0.8) !important;
+        }
+
+        /* 빈 상태 메시지 */
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 30px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 10px;
+            border: 2px dashed rgba(236, 173, 223, 0.2);
+        }
+
+        /* 구분선 스타일링 */
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd;
+            margin: 30px 0;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .post-title {
+                font-size: 1.5rem;
+            }
+
+            .profile-img {
+                width: 40px;
+                height: 40px;
+            }
+
+            .image-slider button {
+                padding: 5px 8px;
+                font-size: 8px;
+            }
+
+            .comments-title {
+                font-size: 1.3rem;
+            }
+
+            .post-actions {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .author-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .profile-img {
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+
+            .comment-actions {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
         }
     </style>
 </head>
@@ -49,8 +414,7 @@
         <ul>
             {% if post.room %}
                 <li><a href="{% url 'board:room_detail' post.room.slug %}">방으로 이동</a></li>
-                <li><a href="{% url 'board:leave_room' post.room.slug %}" 
-                       onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
+                <li><a href="{% url 'board:leave_room' post.room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
                 {% if user.is_authenticated %}
                     <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
                     <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
@@ -60,13 +424,26 @@
             {% endif %}
         </ul>
     </nav>
-    <hr> 
+    <hr>
 
-    <div style="max-width: 700px; margin: 30px auto; padding: 20px;">
-        <h2>{{ post.title }}</h2>
-        <small>작성자: {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}</small>
-        <hr>
+    <div class="main-container">
+        <!-- 게시물 헤더 -->
+        <div class="post-header">
+            <h2 class="post-title">{{ post.title }}</h2>
+            <div class="author-info">
+                {% if post.author.user_profile_image %}
+                    <img src="{{ post.author.user_profile_image.url }}" class="profile-img" alt="프로필">
+                {% else %}
+                    <img src="{% static 'profile_images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
+                {% endif %}
+                <div class="author-details">
+                    <strong>{{ post.author.username }}</strong><br>
+                    <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
+                </div>
+            </div>
+        </div>
 
+        <!-- 이미지 슬라이더 -->
         {% if post.images.all %}
             <div class="image-slider">
                 {% for img in post.images.all %}
@@ -79,72 +456,82 @@
             </div>
         {% endif %}
 
+        <!-- 게시물 내용 -->
         {% if post.text %}
-            <p style="font-size: 16px; line-height: 1.6;">{{ post.text }}</p>
+            <div class="post-content">{{ post.text }}</div>
         {% endif %}
 
-        <div style="margin-top: 20px;">
-            {% if user == post.author %}
-                <a href="{% url 'board:edit_post' post.room.slug post.id %}">수정</a>
-                <a href="{% url 'board:delete_post' post.room.slug post.id %}" onclick="return confirm('게시글을 삭제하시겠습니까?');">삭제</a>
-            {% endif %}
-        </div>
+        <!-- 게시물 액션 버튼 -->
+        {% if user == post.author %}
+            <div class="post-actions">
+                <a href="{% url 'board:edit_post' post.room.slug post.id %}">✏️ 수정</a>
+                <a href="{% url 'board:delete_post' post.room.slug post.id %}" onclick="return confirm('게시글을 삭제하시겠습니까?');">🗑️ 삭제</a>
+            </div>
+        {% endif %}
 
-        <hr>
-        <h3>댓글 ({{ comments.count }})</h3>
-        <!-- 댓글 목록 -->
-        {% if comments %}
-            {% for comment in comments %}
-                <div style="border-bottom: 1px solid #eee; padding: 8px 0;">
-                    <form method="post" style="margin-bottom: 5px;">
-                        {% csrf_token %}
-                        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+        <!-- 댓글 섹션 -->
+        <div class="comments-section">
+            <h3 class="comments-title">
+                댓글 
+                <span class="comment-count">{{ comments.count }}</span>
+            </h3>
 
-                        {% if request.user == comment.author and request.GET.edit == comment.id|stringformat:"s" %}
-                            <textarea name="comment" rows="2" style="width: 100%;">{{ comment.text }}</textarea>
-                            <button type="submit" name="action" value="edit" style="background: pink;">수정 완료</button>
-                        {% else %}
-                            <p>{{ comment.text }}</p>
-                        {% endif %}
-
-                        <small>{{ comment.author.username }} · {{ comment.created_at|date:"Y-m-d H:i" }}</small>
-
-                        {% if request.user == comment.author %}
-                            <div style="margin-top: 5px;">
-                                {% if request.GET.edit == comment.id|stringformat:"s" %}
+            <!-- 댓글 목록 -->
+            {% if comments %}
+                {% for comment in comments %}
+                    <div class="comment-item">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            
+                            <div class="comment-author">
+                                {% if comment.author.user_profile_image %}
+                                    <img src="{{ comment.author.user_profile_image.url }}" class="profile-img" alt="프로필">
                                 {% else %}
-                                    <a href="?edit={{ comment.id }}">수정</a>
-                                    <button type="submit" name="action" value="delete"
-                                        onclick="return confirm('댓글을 삭제하시겠습니까?');"
-                                        style="background: none; border: none; color: red; cursor: pointer;">
-                                        삭제
-                                    </button>
+                                    <img src="{% static 'profile_images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
                                 {% endif %}
+                                <div class="author-details">
+                                    <strong>{{ comment.author.username }}</strong><br>
+                                    <small>{{ comment.created_at|date:"Y-m-d H:i" }}</small>
+                                </div>
                             </div>
-                        {% endif %}
-                    </form>
+
+                            {% if request.user == comment.author and request.GET.edit == comment.id|stringformat:"s" %}
+                                <textarea name="comment" rows="3" class="edit-textarea">{{ comment.text }}</textarea>
+                                <div class="comment-actions" style="margin-top: 10px;">
+                                    <button type="submit" name="action" value="edit" class="edit-submit">✅ 수정 완료</button>
+                                </div>
+                            {% else %}
+                                <div class="comment-text">{{ comment.text }}</div>
+                            {% endif %}
+
+                            {% if request.user == comment.author and request.GET.edit != comment.id|stringformat:"s" %}
+                                <div class="comment-actions">
+                                    <a href="?edit={{ comment.id }}">✏️ 수정</a>
+                                    <button type="submit" name="action" value="delete" class="delete-btn" onclick="return confirm('댓글을 삭제하시겠습니까?');">🗑️ 삭제</button>
+                                </div>
+                            {% endif %}
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-message">
+                    <p>💭 아직 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!</p>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>아직 댓글이 없습니다.</p>
-        {% endif %}
+            {% endif %}
 
-        <hr>
-
-        <!-- 댓글 작성 -->
-        <form method="post" style="margin-top: 10px;">
-            {% csrf_token %}
-            <textarea name="comment" rows="3" placeholder="댓글을 입력하세요"
-                    style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;"></textarea>
-            <button type="submit" name="action" value="create"
-                    style="background: pink; border: none; padding: 8px 12px; border-radius: 6px; margin-top: 5px;">
-                댓글 작성
-            </button>
-        </form>
+            <!-- 댓글 작성 폼 -->
+            <div class="comment-form">
+                <form method="post">
+                    {% csrf_token %}
+                    <textarea name="comment" rows="4" placeholder="💬 댓글을 입력하세요..."></textarea>
+                    <button type="submit" name="action" value="create">💌 댓글 작성</button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 이미지 슬라이더 기능
         document.querySelectorAll(".image-slider").forEach(slider => {
             const images = slider.querySelectorAll("img");
             const prev = slider.querySelector(".prev");
@@ -157,6 +544,7 @@
                     current = (current - 1 + images.length) % images.length;
                     images[current].classList.add("active");
                 });
+
                 next.addEventListener("click", () => {
                     images[current].classList.remove("active");
                     current = (current + 1) % images.length;
@@ -164,6 +552,24 @@
                 });
             }
         });
+
+        // 부드러운 스크롤 효과
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 댓글 작성 시 자동 포커스
+        const commentTextarea = document.querySelector('.comment-form textarea');
+        if (commentTextarea) {
+            commentTextarea.addEventListener('focus', function() {
+                this.style.borderColor = '#ecaddfb9';
+            });
+        }
     </script>
 </body>
 </html>

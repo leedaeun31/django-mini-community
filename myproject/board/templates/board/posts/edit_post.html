@@ -1,29 +1,474 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.room.name }}</title>
+</head>
+<body>
+    
+    {% block content %}
+    <style>
+        body {
+            background-color: #ffffff;
+        }
 
-{% block content %}
-<div style="max-width: 600px; margin: 30px auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-    <h2 style="text-align: center; margin-bottom: 20px;">게시글 수정</h2>
+        /* header와 nav 스타일 적용 */
+        #header_title {
+            text-align: center;
+            font-size: 28px;
+            margin: 25px 0;
+        }
 
-    <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
-        {% csrf_token %}
-        <input type="text" name="title" value="{{ post.title }}" 
-               style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;" required>
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px;
+            box-sizing: border-box;
+        }
 
-        <textarea name="text" rows="5"
-                  style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">{{ post.text }}</textarea>
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-        {% if post.image %}
-            <p>현재 이미지:</p>
-            <img src="{{ post.image.url }}" style="max-width: 100%; margin-bottom: 10px;">
-        {% endif %}
+        nav ul li {
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-        <label style="font-size: 14px;">이미지 교체 (선택)</label>
-        <input type="file" name="image">
+        nav ul li a {
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
+        }
 
-        <button type="submit" 
-                style="background: pink; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
-            수정 완료
-        </button>
-    </form>
-</div>
-{% endblock %}
+        .user-info {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 구분선 스타일링 */
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd;
+            margin: 30px 0;
+        }
+
+        /* 메인 컨테이너 스타일링 */
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(236, 173, 223, 0.2);
+            border: 1px solid rgba(236, 173, 223, 0.3);
+        }
+
+        /* 페이지 제목 */
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #ecaddfb9;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        /* 폼 스타일 */
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 입력 필드 스타일 */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding-left: 5px;
+        }
+
+        .form-group input[type="text"] {
+            padding: 15px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: rgba(236, 173, 223, 0.05);
+        }
+
+        .form-group input[type="text"]:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+            background: #ffffff;
+        }
+
+        .form-group textarea {
+            padding: 15px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s ease;
+            background: rgba(236, 173, 223, 0.05);
+        }
+
+        .form-group textarea:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+            background: #ffffff;
+        }
+
+        /* 현재 이미지 표시 */
+        .current-image-section {
+            background: rgba(236, 173, 223, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ecaddfb9;
+            margin: 15px 0;
+        }
+
+        .current-image-section p {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .current-image-section img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(236, 173, 223, 0.3);
+        }
+
+        /* 파일 입력 스타일 */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: rgba(236, 173, 223, 0.1);
+            border: 2px dashed #ecaddfb9;
+            border-radius: 10px;
+            text-align: center;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .file-input-label:hover {
+            background: rgba(236, 173, 223, 0.2);
+            border-color: rgba(253, 107, 222, 0.8);
+            color: #333;
+        }
+
+        /* 이미지 미리보기 */
+        .preview-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 10px;
+            min-height: 60px;
+        }
+
+        .preview-container img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(236, 173, 223, 0.3);
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .preview-container img:hover {
+            transform: scale(1.05);
+            border-color: #ecaddfb9;
+        }
+
+        .preview-empty {
+            color: #999;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 60px;
+        }
+
+        /* 제출 버튼 */
+        .submit-btn {
+            background: #ecaddfb9;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: rgba(253, 107, 222, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .form-group input[type="text"],
+            .form-group textarea {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .preview-container img {
+                width: 80px;
+                height: 80px;
+            }
+
+            nav {
+                padding: 10px 20px;
+            }
+
+            nav ul li {
+                margin-left: 20px;
+                font-size: 16px;
+            }
+
+            nav ul li a {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .preview-container {
+                gap: 10px;
+            }
+
+            .preview-container img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .submit-btn {
+                font-size: 14px;
+                padding: 12px 25px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            nav ul li {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    <header>
+            <h2 id="header_title">🌟 {{ post.room.name }}방의 {{ post.author }}님 게시물🌟</h2>
+        </header>
+        <hr>
+        <nav>
+            <ul>
+                {% if post.room %}
+                    <li><a href="javascript:history.back()">이전 페이지로 이동</a></li>
+                    <li><a href="{% url 'board:leave_room' post.room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
+                    {% if user.is_authenticated %}
+                        <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                        <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
+                    {% else %}
+                        <li><a href="{% url 'user:login_page' %}">로그인</a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+        </nav>
+        <hr>
+
+    <div class="main-container">
+        <h2 class="page-title">✏️ 게시글 수정</h2>
+
+        <form method="post" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="title">게시글 제목</label>
+                <input type="text" id="title" name="title" value="{{ post.title }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="text">게시글 내용</label>
+                <textarea id="text" name="text" rows="5" placeholder="내용을 입력하세요...">{{ post.text }}</textarea>
+            </div>
+
+            {% if post.image %}
+                <div class="current-image-section">
+                    <p>📷 현재 이미지:</p>
+                    <img src="{{ post.image.url }}" alt="현재 이미지">
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label>🖼️ 이미지 교체 (선택사항 - 최대 5장)</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="imageInput" name="images" multiple accept="image/*">
+                    <label for="imageInput" class="file-input-label">
+                        📁 이미지 파일 선택하기 (클릭 또는 드래그&드롭)
+                    </label>
+                </div>
+                <div id="previewContainer" class="preview-container">
+                    <div class="preview-empty">선택된 이미지가 없습니다</div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                ✅ 수정 완료
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const input = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('previewContainer');
+
+        // 파일 개수 제한
+        document.getElementById('imageInput').addEventListener('change', function() {
+            if (this.files.length > 5) {
+                alert("최대 5장까지 업로드할 수 있습니다.");
+                this.value = "";
+                previewContainer.innerHTML = '<div class="preview-empty">선택된 이미지가 없습니다</div>';
+                return;
+            }
+            
+            // 미리보기 업데이트
+            updatePreview();
+        });
+
+        // 이미지 미리보기 함수
+        function updatePreview() {
+            previewContainer.innerHTML = '';
+            
+            if (input.files.length === 0) {
+                previewContainer.innerHTML = '<div class="preview-empty">선택된 이미지가 없습니다</div>';
+                return;
+            }
+
+            Array.from(input.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.title = file.name;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 드래그 앤 드롭 기능
+        const fileLabel = document.querySelector('.file-input-label');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileLabel.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileLabel.style.background = 'rgba(236, 173, 223, 0.3)';
+            fileLabel.style.borderColor = 'rgba(253, 107, 222, 0.8)';
+        }
+
+        function unhighlight(e) {
+            fileLabel.style.background = 'rgba(236, 173, 223, 0.1)';
+            fileLabel.style.borderColor = '#ecaddfb9';
+        }
+
+        fileLabel.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 5) {
+                alert("최대 5장까지 업로드할 수 있습니다.");
+                return;
+            }
+            
+            input.files = files;
+            updatePreview();
+        }
+
+        // 입력 필드 포커스 효과
+        document.querySelectorAll('input, textarea').forEach(element => {
+            element.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.01)';
+            });
+            
+            element.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

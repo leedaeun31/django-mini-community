@@ -1,176 +1,543 @@
-{% extends 'main/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ room.name }}</title>
+</head>
+<body>
+    {% block content %}
+    {% if user.is_authenticated %}
+    <style>
+        body {
+            background-color: #ffffff;
+        }
 
-{% block content %}
-{% if user.is_authenticated %}
-<div class="container">
-    <h1>방 생성 페이지</h1>
+        /* header와 nav 스타일 적용 */
+        #header_title {
+            text-align: center;
+            font-size: 28px;
+            margin: 25px 0;
+        }
 
-    <!-- 방 이름 입력 폼 -->
-    <form method="post" class="create-form">
-        {% csrf_token %}
-        <input type="text" name="name" placeholder="방 이름을 입력하세요" required>
-        <input type="text" name="password" placeholder="PIN 번호를 입력하세요 (4글자)"  pattern="\d{4}"  maxlength="4" required> 
-        <button type="submit">방 생성하기</button>
-    </form>
-</div>
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px;
+            box-sizing: border-box;
+        }
 
-<!-- 모달 -->
-<div id="roomModal" class="modal">
-    <div class="modal-content">
-        <button class="close-btn" id="closeModal">&times;</button>
-        <h2>방이 생성되었습니다!</h2>
-        <p id="roomLink"></p>
-        <button class="copy-btn" id="copyLink">초대코드 복사</button>
-    </div>
-</div>
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-<style>
-    /* 컨테이너 중앙 정렬 */
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 60vh; /* 화면 높이에 맞춰 중앙 정렬 */
-        text-align: center;
-        padding: 20px;
-    }
+        nav ul li {
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
+        }
 
-    .container h1 {
-        font-size: 2rem;
-        margin-bottom: 20px;
-    }
+        nav ul li a {
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
+        }
 
-    /* 폼 스타일 */
-    .create-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        width: 100%;
-        max-width: 400px; /* 화면 크기에 따라 크기 자동 조정 */
-    }
+        .user-info {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
 
-    .create-form input[type="text"] {
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        text-align: center;
-    }
+        /* 구분선 스타일링 */
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd;
+            margin: 30px 0;
+        }
 
-    .create-form button {
-        background: #ecaddfb9; /* 분홍색 */
-        color: #000000;
-        padding: 10px;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
+        /* 메인 컨테이너 스타일링 */
+        .main-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(236, 173, 223, 0.2);
+            border: 1px solid rgba(236, 173, 223, 0.3);
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-    .create-form button:hover {
-        background: #fd6bdeb9; /* hover시 좀 더 진한 분홍색 */
-    }
+        /* 페이지 헤더 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-    /* 모달 스타일 */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5);
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
+        .page-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #ecaddfb9;
+            padding-bottom: 15px;
+            display: inline-block;
+        }
 
-    .modal-content {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        width: 90%;
-        max-width: 350px;
-        position: relative;
-    }
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
-    .modal-content h2 {
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
+        /* 방 생성 폼 스타일링 */
+        .create-form {
+            background: rgba(236, 173, 223, 0.05);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid rgba(236, 173, 223, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
 
-    .modal-content p {
-        word-break: break-all;
-        margin-bottom: 10px;
-    }
+        .form-group {
+            position: relative;
+        }
 
-    .close-btn {
-        position: absolute;
-        top: 8px;
-        right: 10px;
-        cursor: pointer;
-        font-size: 20px;
-        border: none;
-        background: none;
-    }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
 
-    .copy-btn {
-        padding: 5px 10px;
-        background: #ecaddfb9; /* 분홍색 버튼 */
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
 
-    .copy-btn:hover {
-        background: #fd6bdeb9;
-    }
+        .form-group input[type="text"]:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+            background: rgba(236, 173, 223, 0.02);
+        }
 
-    /* 반응형: 화면이 작아질 때도 중앙 배치 유지 */
-    @media (max-width: 480px) {
-        .container h1 {
+        .help-text {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* 제출 버튼 스타일링 */
+        .submit-btn {
+            background: #ecaddfb9;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: #ecaddfb9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 모달 스타일링 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(236, 173, 223, 0.3);
+            border: 2px solid rgba(236, 173, 223, 0.2);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: 30px;
+        }
+
+        .modal-title {
             font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
         }
-        .create-form input[type="text"] {
-            font-size: 0.9rem;
+
+        .modal-emoji {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
         }
-        .create-form button {
-            font-size: 0.9rem;
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+            border: none;
+            background: none;
+            color: #999;
+            transition: color 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-    }
-</style>
-{% endif %}
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    {% if room %}
-    const modal = document.getElementById('roomModal');
-    const closeBtn = document.getElementById('closeModal');
-    const copyBtn = document.getElementById('copyLink');
-    const roomLinkElem = document.getElementById('roomLink');
+        .close-btn:hover {
+            color: #333;
+        }
 
-    // 🔹 전체 URL 대신 UUID만 표시
-    const inviteCode = "{{ room.slug }}";
-    roomLinkElem.innerText = inviteCode;
+        /* 초대코드 표시 */
+        .invite-code-section {
+            background: rgba(236, 173, 223, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed rgba(236, 173, 223, 0.3);
+        }
 
-    // 모달 열기
-    modal.style.display = 'flex';
+        .invite-code-label {
+            color: #666;
+            font-size: 10px;
+            margin-bottom: 8px;
+        }
 
-    // 닫기 버튼 이벤트
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
+        .invite-code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            background: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            word-break: break-all;
+            margin-bottom: 15px;
+        }
+
+        /* 모달 버튼 */
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .copy-btn {
+            background: #ecaddfb9;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+        }
+
+        .copy-btn:hover {
+            background: rgba(253, 107, 222, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
+        }
+
+        .go-room-btn {
+            background: rgba(46, 204, 113, 0.8);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .go-room-btn:hover {
+            background: rgba(39, 174, 96, 0.8);
+            transform: translateY(-2px);
+        
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 20px;
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .create-form {
+                padding: 25px;
+            }
+
+            .modal-content {
+                padding: 30px;
+                margin: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.3rem;
+            }
+
+            .form-group input[type="text"] {
+                font-size: 14px;
+            }
+
+            .submit-btn {
+                font-size: 16px;
+                padding: 12px 25px;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .invite-code-display {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <header>
+            <h2 id="header_title">🌟 게시물 생성 페이지🌟</h2>
+        </header>
+        <hr>
+        <nav>
+            <ul>
+                <li><a href="/">MAIN</a></li>
+                {% if user.is_authenticated %}
+                    <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                    <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
+                {% else %}
+                    <li><a href="{% url 'user:login_page' %}">로그인</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <hr>
+
+    <div class="main-container">
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <h1 class="page-title">🏠 새로운 방 만들기</h1>
+        </div>
+
+        <!-- 방 생성 폼 -->
+        <form method="post" class="create-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="room-name">🎯 방 이름</label>
+                <input type="text" id="room-name" name="name" placeholder="방 이름을 입력하세요" required>
+            </div>
+
+            <div class="form-group">
+                <label for="room-pin">🔐 PIN 번호</label>
+                <input type="text" id="room-pin" name="password" placeholder="4자리 숫자를 입력하세요" 
+                    pattern="\d{4}" maxlength="4" required>
+                <div class="help-text">방에 입장할 때 사용할 4자리 비밀번호입니다</div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                ✨ 방 생성하기
+            </button>
+        </form>
+    </div>
+
+    <!-- 성공 모달 -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            
+            <div class="modal-header">
+                <h2 class="modal-title">방이 생성되었습니다!</h2>
+            </div>
+
+            <div class="invite-code-section">
+                <div class="invite-code-label">📋 초대코드</div>
+                <div class="invite-code-display" id="roomLink"></div>
+                <div class="help-text">이 코드를 친구들에게 공유해주세요</div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="copy-btn" id="copyLink">📋 코드 복사</button>
+                <a href="#" class="go-room-btn" id="goToRoom">🚪 방으로 이동</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        {% if room %}
+        const modal = document.getElementById('roomModal');
+        const closeBtn = document.getElementById('closeModal');
+        const copyBtn = document.getElementById('copyLink');
+        const goToRoomBtn = document.getElementById('goToRoom');
+        const roomLinkElem = document.getElementById('roomLink');
+
+        // 초대코드 설정
+        const inviteCode = "{{ room.slug }}";
+        roomLinkElem.innerText = inviteCode;
+        
+        // 방으로 이동 버튼 URL 설정
+        goToRoomBtn.href = `/board/${inviteCode}/`;
+
+        // 모달 열기
+        modal.style.display = 'flex';
+
+        // 닫기 버튼 이벤트
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // 모달 배경 클릭 시 닫기
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // 복사 버튼 이벤트
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(inviteCode)
+                .then(() => {
+                    // 버튼 피드백
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '✅ 복사됨!';
+                    copyBtn.style.background = 'rgba(46, 204, 113, 0.8)';
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                        copyBtn.style.background = '#ecaddfb9';
+                    }, 2000);
+                    
+                    alert('초대코드가 복사되었습니다! 📋');
+                })
+                .catch(err => {
+                    console.error('복사 실패', err);
+                    alert('복사에 실패했습니다. 직접 선택하여 복사해주세요.');
+                });
+        });
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                modal.style.display = 'none';
+            }
+        });
+        {% endif %}
+
+        // 폼 입력 필드 개선
+        const roomNameInput = document.getElementById('room-name');
+        const roomPinInput = document.getElementById('room-pin');
+
+        // 방 이름 입력 시 실시간 피드백
+        roomNameInput.addEventListener('input', function() {
+            if (this.value.length > 20) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = 'rgba(236, 173, 223, 0.3)';
+            }
+        });
+
+        // PIN 번호 입력 시 숫자만 허용
+        roomPinInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value.length === 4) {
+                this.style.borderColor = 'rgba(46, 204, 113, 0.8)';
+            } else {
+                this.style.borderColor = 'rgba(236, 173, 223, 0.3)';
+            }
+        });
+
+        // 폼 제출 시 로딩 상태
+        const form = document.querySelector('.create-form');
+        const submitBtn = document.querySelector('.submit-btn');
+        
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '🔄 생성 중...';
+            submitBtn.disabled = true;
+        });
     });
-
-    // 복사 버튼 이벤트 (UUID 복사)
-    copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(inviteCode)
-            .then(() => alert('초대코드가 복사되었습니다!'))
-            .catch(err => console.error('복사 실패', err));
-    });
+    </script>
     {% endif %}
-});
-</script>
-{% endblock %}
+    {% endblock %} 
+</body>
+</html>

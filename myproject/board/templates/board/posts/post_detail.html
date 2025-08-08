@@ -434,7 +434,7 @@
                 {% if post.author.user_profile_image %}
                     <img src="{{ post.author.user_profile_image.url }}" class="profile-img" alt="프로필">
                 {% else %}
-                    <img src="{% static 'profile_images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
+                    <img src="{% static 'images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
                 {% endif %}
                 <div class="author-details">
                     <strong>{{ post.author.username }}</strong><br>
@@ -488,7 +488,7 @@
                                 {% if comment.author.user_profile_image %}
                                     <img src="{{ comment.author.user_profile_image.url }}" class="profile-img" alt="프로필">
                                 {% else %}
-                                    <img src="{% static 'profile_images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
+                                    <img src="{% static 'images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
                                 {% endif %}
                                 <div class="author-details">
                                     <strong>{{ comment.author.username }}</strong><br>

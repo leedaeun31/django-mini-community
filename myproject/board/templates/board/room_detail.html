@@ -7,36 +7,371 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
     <style>
+        #header_title {
+            text-align: center;
+            font-size: 28px;
+            margin: 25px 0;
+        }
+
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px;
+            box-sizing: border-box;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
+        }
+        
+        body {
+            background-color: #ffffff;
+        }
+
+        /* 메인 컨테이너 스타일링 */
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(236, 173, 223, 0.2);
+            border: 1px solid rgba(236, 173, 223, 0.3);
+        }
+
+        /* 방 정보 헤더 */
+        .room-header {
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 10px;
+            background: rgba(236, 173, 223, 0.1);
+            border-radius: 15px;
+            border-left: 4px solid #ecaddfb9;
+        }
+
+        /* 초대코드 섹션 */
+        .invite-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 10px;
+            border: 2px dashed rgba(236, 173, 223, 0.3);
+        }
+
+        .invite-input {
+            width: 60%;
+            padding: 10px 15px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            background: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .invite-input:focus {
+            border-color: #ecaddfb9;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+        }
+
+        .invite-btn {
+            background: #ecaddfb9;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+        }
+
+        .invite-btn:hover {
+            background: rgba(253, 107, 222, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
+        }
+
+        /* 게시물 목록 */
+        .posts-section {
+            margin-top: 30px;
+        }
+
+        .posts-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 3px solid #ecaddfb9;
+            padding-bottom: 10px;
+        }
+
+        .post-count {
+            background: #ecaddfb9;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* 개별 게시물 스타일 */
+        .post-item {
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ecaddfb9;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(236, 173, 223, 0.2);
+        }
+
+        .post-item:hover {
+            background: rgba(236, 173, 223, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(236, 173, 223, 0.3);
+        }
+
+        .post-title-link {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+
+        .post-title-link:hover {
+            color: #ecaddfb9;
+        }
+
+        /* 이미지 슬라이더 개선 */
         .image-slider {
             position: relative;
-            max-width: 300px;
-            margin: 10px 0;
+            max-width: 100%;
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
         }
+
         .image-slider img {
             width: 100%;
-            max-height: 150px;
+            max-height: 400px;
             display: none;
             object-fit: cover;
-            border-radius: 6px;
+            transition: opacity 0.3s ease;
+            border-radius: 8px;
         }
+
         .image-slider img.active {
             display: block;
         }
+
         .image-slider button {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
-            color: white;
+            background: rgba(255, 255, 255, 0.8);
+            color: rgb(0, 0, 0);
             border: none;
-            padding: 5px 10px;
+            padding: 4px 6px;
             cursor: pointer;
+            font-size: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(236, 173, 223, 0.4);
         }
+
+        .image-slider button:hover {
+            background: #ecaddfb9;
+            transform: translateY(-50%) scale(1.1);
+        }
+
         .image-slider .prev {
-            left: 5px;
+            left: 15px;
         }
+
         .image-slider .next {
-            right: 5px;
+            right: 15px;
+        }
+
+        /* 게시물 내용 미리보기 */
+        .post-preview {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #666;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(236, 173, 223, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid rgba(236, 173, 223, 0.3);
+        }
+
+        /* 게시물 메타 정보 */
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(236, 173, 223, 0.2);
+            font-size: 14px;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .post-author img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ecaddfb9;
+        }
+
+        .comment-count {
+            background: rgba(236, 173, 223, 0.2);
+            color: #333;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        /* 빈 상태 메시지 */
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 50px 30px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 15px;
+            border: 2px dashed rgba(236, 173, 223, 0.2);
+            margin: 30px 0;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: rgba(236, 173, 223, 0.5);
+        }
+
+        .empty-text {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-subtext {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        /* 구분선 스타일링 */
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd;
+            margin: 30px 0;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .invite-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .invite-input {
+                width: 100%;
+            }
+
+            .post-title-link {
+                font-size: 1.1rem;
+            }
+
+            .image-slider {
+                max-width: 100%;
+            }
+
+            .image-slider img {
+                max-height: 150px;
+            }
+
+            .image-slider button {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            nav {
+                padding: 10px 20px;
+            }
+
+            nav ul li {
+                margin-left: 20px;
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .posts-title {
+                font-size: 1.3rem;
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .post-item {
+                padding: 15px;
+            }
+
+            .empty-message {
+                padding: 30px 20px;
+            }
+
+            .empty-icon {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -47,7 +382,7 @@
     <hr>
     <nav>
         <ul>
-            <li><a href="/">main</a></li>
+            <li><a href="/">MAIN</a></li>
             {% if user == room.created_by %}
                 <li><a href="{% url 'board:setting_room' room.slug %}">방 설정</a></li>
             {% endif %}
@@ -63,56 +398,96 @@
     </nav>
     <hr>
 
-     <div style="margin-top: 10px; text-align: center;">
-        <input type="text" id="roomUrl" value="{{room.slug}}" readonly style="width: 60%; padding: 5px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">
+    <div class="main-container">
+        <!-- 방 정보 헤더 -->
+        <div class="room-header">
+            <!-- 초대코드 섹션 -->
+            <div class="invite-section">
+                초대코드
+                <input type="text" id="roomUrl" class="invite-input" value="{{room.slug}}" readonly>
+                <button onclick="copyRoomUrl()" class="invite-btn">
+                    📋 초대코드 복사
+                </button>
+            </div>
+        </div>
 
-        <button onclick="copyRoomUrl()" style="background: pink; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer;">
-            초대코드 복사
-        </button>
-    </div>
-    
-    <div style="margin-top: 20px;">
-        {% if posts %}
-            {% for post in posts %}
-                <div style="border-bottom: 1px solid #ccc; padding: 10px 0;">
-                    <h3>
-                        <a href="{% url 'board:post_detail' room.slug post.id %}">{{ post.title }}</a>
-                    </h3>
+        <!-- 게시물 목록 섹션 -->
+        <div class="posts-section">
+            <h3 class="posts-title">
+                📝 게시물 목록
+                {% if posts %}
+                    <span class="post-count">{{ posts|length }}</span>
+                {% endif %}
+            </h3>
 
-                    {% if post.images.all %}
-                        <div class="image-slider">
-                            {% for img in post.images.all %}
-                                <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}">
-                            {% endfor %}
-                            {% if post.images.count > 1 %}
-                                <button class="prev">◀</button>
-                                <button class="next">▶</button>
-                            {% endif %}
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="post-item">
+                        <a href="{% url 'board:post_detail' room.slug post.id %}" class="post-title-link">
+                            {{ post.title }}
+                        </a>
+
+                        {% if post.images.all %}
+                            <div class="image-slider">
+                                {% for img in post.images.all %}
+                                    <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}" alt="게시물 이미지">
+                                {% endfor %}
+                                {% if post.images.count > 1 %}
+                                    <button class="prev">◀</button>
+                                    <button class="next">▶</button>
+                                {% endif %}
+                            </div>
+                        {% elif post.text %}
+                            <div class="post-preview">
+                                {{ post.text|truncatechars:100 }}
+                            </div>
+                        {% endif %}
+
+                        <div class="post-meta">
+                            <div class="post-author">
+                                {% if post.author.user_profile_image %}
+                                    <img src="{{ post.author.user_profile_image.url }}" alt="프로필">
+                                {% else %}
+                                    <img src="{% static 'images/default_profile.png' %}" alt="기본 프로필">
+                                {% endif %}
+                                <span>{{ post.author.username }} · 📅 {{ post.created_at|date:"Y-m-d H:i" }}</span>
+                            </div>
+                            <div class="comment-count">
+                                💬 댓글 {{ post.comment_count }}
+                            </div>
                         </div>
-                    {% elif post.text %}
-                        <p>{{ post.text|truncatechars:50 }}</p>
-                    {% endif %}
-
-                    <small>
-                        작성자: {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}
-                    </small>
-                    <span style="float:right;">댓글 {{ post.comment_count }}</span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-message">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-text">아직 게시글이 없습니다</div>
+                    <div class="empty-subtext">첫 번째 게시물을 작성해보세요!</div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>아직 게시글이 없습니다.</p>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 
     <script>
-
         function copyRoomUrl() {
             const roomUrlInput = document.getElementById("roomUrl");
             roomUrlInput.select();
             document.execCommand("copy");
 
+            // 버튼 텍스트 임시 변경으로 피드백 제공
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = "✅ 복사됨!";
+            button.style.background = "rgba(46, 204, 113, 0.8)";
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = "#ecaddfb9";
+            }, 2000);
+
             alert("방 링크가 복사되었습니다! 📋");
         }
+
         // 이미지 슬라이더 기능
         document.querySelectorAll(".image-slider").forEach(slider => {
             const images = slider.querySelectorAll("img");
@@ -121,17 +496,52 @@
             let current = 0;
 
             if (prev && next) {
-                prev.addEventListener("click", () => {
+                prev.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     images[current].classList.remove("active");
                     current = (current - 1 + images.length) % images.length;
                     images[current].classList.add("active");
                 });
-                next.addEventListener("click", () => {
+
+                next.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     images[current].classList.remove("active");
                     current = (current + 1) % images.length;
                     images[current].classList.add("active");
                 });
             }
+        });
+
+        // 부드러운 스크롤 효과
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 게시물 아이템 클릭 시 애니메이션
+        document.querySelectorAll('.post-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON') {
+                    const link = this.querySelector('.post-title-link');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+        });
+
+        // 초대코드 입력 필드 클릭 시 자동 선택
+        document.getElementById('roomUrl').addEventListener('click', function() {
+            this.select();
         });
 
         // document.addEventListener("DOMContentLoaded", function () {
@@ -173,6 +583,5 @@
         //     });
         // });
     </script>
-    
 </body>
 </html>

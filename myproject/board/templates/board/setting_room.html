@@ -11,12 +11,48 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            background-color: #ffffff;
         }
 
-        .styled-content {
-            background: #ffffff;
-            min-height: calc(100vh - 120px);
+        /* header와 nav 스타일 적용 */
+        #header_title {text-align: center;
+            font-size: 28px; 
+            margin: 25px 0; }
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px; 
+            box-sizing: border-box;
+        }
+        nav ul {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        nav ul li {
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
+        }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd; 
+            margin: 30px 0; }
+
+        .user-info {
+            font-size: 18px;
+            display: flex;
+            align-items: center;
         }
 
         .main-container {
@@ -25,85 +61,67 @@
             padding: 0 20px;
         }
 
-        .settings-form {
-            background: rgba(255, 255, 255, 0.95);
+        .settings-form, .participants-section {
+            background-color: #fff;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(21, 21, 21, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
-            text-align: center;
         }
 
-        .settings-form h3 {
-            color: #333;
+        .settings-form h3, .participants-section h3 {
+            text-align: center;
+            font-size: 24px;
             margin-bottom: 25px;
-            font-size: 1.5rem;
         }
 
         .form-group {
             margin-bottom: 20px;
-            text-align: left;
         }
 
-        .form-group label {
+        label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: bold;
         }
 
-        .form-group input[type="text"] {
+        input[type="text"], input[type="checkbox"] {
             width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease;
-            text-align: center;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
         }
 
-        .form-group input[type="text"]:focus {
-            border-color: #ecaddfb9;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.2);
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
         }
 
         .save-btn {
-            background: linear-gradient(135deg, #ecaddfb9 100%);
-            color: #000000;
-            padding: 12px 30px;
+            display: block;
+            width: 100%;
+            background-color:#ecaddfb9;
             border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
+            color: #000;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 30px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(236, 173, 223, 0.4);
         }
 
         .save-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(236, 173, 223, 0.6);
-        }
-
-        .participants-section {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-
-        .participants-section h3 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
+            background-color: #ecaddf;
         }
 
         .participants-list {
-            max-width: 500px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -111,62 +129,52 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
             margin-bottom: 10px;
-            background: rgba(236, 173, 223, 0.1);
-            border-radius: 10px;
-            border-left: 4px solid #ecaddf;
-            transition: all 0.3s ease;
-        }
-
-        .participant-item:hover {
-            background: rgba(236, 173, 223, 0.2);
-            transform: translateX(5px);
+            background-color: #fafafa;
         }
 
         .participant-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .participant-name img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .host-badge {
-            background: linear-gradient(135deg, #ffd900a3, #ffed4e64);
-            color: #333;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
+            background-color: #ffd700;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-weight: bold;
         }
 
         .kick-btn {
-            color: #e74d3cd5;
+            background-color: #ffecec;
+            color: #e74c3c;
+            padding: 6px 12px;
             text-decoration: none;
-            padding: 5px 12px;
-            border-radius: 15px;
-            background: rgba(231, 76, 60, 0.1);
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            font-weight: bold;
         }
 
         .kick-btn:hover {
-            background: rgba(231, 76, 60, 0.2);
-            transform: scale(1.05);
-        }
-
-        .no-participants {
-            text-align: center;
-            color: #999;
-            font-style: italic;
-            padding: 20px;
+            background-color: #fdd;
         }
     </style>
 </head>
 <body>
     <header>
-        <h2 id="header_title">🌟 {{ room.name }} 설정🌟</h2>
+        <h2 id="header_title">🌟 {{ room.name }} 설정 페이지🌟</h2>
     </header>
     <hr>
     <nav>
@@ -182,56 +190,55 @@
         </ul>
     </nav>
     <hr>
-
-    <div class="styled-content">
-        <div class="main-container">
-            <!-- 설정 폼 -->
-            <div class="settings-form">
-                <h3>🛠️ 방 설정 변경</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="room-name">방 이름 변경</label>
-                        <input type="text" id="room-name" name="name" value="{{ room.name }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="room-password">PIN 변경 (4자리)</label>
-                        <input type="text" id="room-password" name="password" placeholder="새로운 PIN 번호 (4글자)" pattern="\d{4}" maxlength="4">
-                    </div>
-                    <div>
-                        <label>
-                            <input type="checkbox" name="require_pin_everytime"
-                                {% if room.require_pin_everytime %}checked{% endif %}>
-                            매번 PIN 입력 
-                        </label><br>
-                    </div>
-                    <button type="submit" class="save-btn">💾 저장하기</button>
-                </form>
-            </div>
-
-            <!-- 참가자 목록 -->
-            <div class="participants-section">
-                <h3>👥 참가자 목록</h3>
-                <div class="participants-list">
-                    {% for participant in participants %}
-                        <div class="participant-item">
-                            <span class="participant-name">{{ participant.user.username }}</span>
-                            {% if participant.user == room.created_by %}
-                                <span class="host-badge">👑 방장</span>
-                            {% else %}
-                                <a href="{% url 'board:kick' room.slug participant.user.id %}" 
-                                   class="kick-btn"
-                                   onclick="return confirm('{{ participant.user.username }}님을 강퇴하시겠습니까?');">
-                                   강퇴하기
-                                </a>
-                            {% endif %}
-                        </div>
-                    {% empty %}
-                        <div class="no-participants">
-                            <p>😔 참가자가 없습니다.</p>
-                        </div>
-                    {% endfor %}
+    <div class="main-container">
+        <div class="settings-form">
+            <h3>🛠️ 방 설정 변경</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="room-name">방 이름 변경</label>
+                    <input type="text" id="room-name" name="name" value="{{ room.name }}">
                 </div>
+                <div class="form-group">
+                    <label for="room-password">PIN 변경 (4자리)</label>
+                    <input type="text" id="room-password" name="password" placeholder="새로운 PIN 번호 (4글자)" pattern="\d{4}" maxlength="4">
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="require_pin_everytime" name="require_pin_everytime" {% if room.require_pin_everytime %}checked{% endif %}>
+                    <label for="require_pin_everytime">매번 PIN 입력</label>
+                </div>
+                <button type="submit" class="save-btn">💾 저장하기</button>
+            </form>
+        </div>
+
+        <div class="participants-section">
+            <h3>👥 참가자 목록</h3>
+            <div class="participants-list">
+                {% for participant in participants %}
+                    <div class="participant-item">
+                        <span class="participant-name">
+                            {% if participant.user.user_profile_image %}
+                                <img src="{{ participant.user.user_profile_image.url }}" alt="프로필">
+                            {% else %}
+                                <img src="{% static 'images/default_profile.png' %}" alt="기본 프로필">
+                            {% endif %}
+                            {{ participant.user.username }}
+                        </span>
+                        {% if participant.user == room.created_by %}
+                            <span class="host-badge">👑 방장</span>
+                        {% else %}
+                            <a href="{% url 'board:kick' room.slug participant.user.id %}" 
+                               class="kick-btn"
+                               onclick="return confirm('{{ participant.user.username }}님을 강퇴하시겠습니까?');">
+                               강퇴하기
+                            </a>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <div class="no-participants">
+                        <p>😔 참가자가 없습니다.</p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

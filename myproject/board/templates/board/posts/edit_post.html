@@ -7,7 +7,6 @@
 </head>
 <body>
     
-    {% block content %}
     <style>
         body {
             background-color: #ffffff;
@@ -332,7 +331,8 @@
             </ul>
         </nav>
         <hr>
-
+    {% block content %}
+    {% if user.is_authenticated %}
     <div class="main-container">
         <h2 class="page-title">✏️ 게시글 수정</h2>
 
@@ -374,6 +374,8 @@
             </button>
         </form>
     </div>
+    {% endif %}
+    {% endblock %}
 
     <script>
         const input = document.getElementById('imageInput');
@@ -469,6 +471,6 @@
             });
         });
     </script>
-    {% endblock %}
+    
 </body>
 </html>

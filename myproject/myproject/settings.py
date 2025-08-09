@@ -172,3 +172,9 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 SECRET_KEY = 'django-insecure-dw*^9&r6pzx#=g%bf@4fln294lcbte$buadpu)_(!i7dxnoa5d'
 DEBUG = True
 ALLOWED_HOSTS = ['*']
+
+# 정적파일 경로(서버에서 서빙)
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# 개발 중 추가 정적 디렉터리 있으면:
+# STATICFILES_DIRS = [BASE_DIR / "static"]

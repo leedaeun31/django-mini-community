@@ -14,8 +14,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
-
 NAVER_CLIENT_ID=os.getenv("NAVER_CLIENT_ID")
 NAVER_CLIENT_SECRET=os.getenv("NAVER_CLIENT_SECRET")
 NAVER_CALLBACK_URL=os.getenv("NAVER_CALLBACK_URL")
@@ -28,10 +26,25 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(BASE_DIR.parent / ".env")
 # 이미지 업로드를 위한 설정
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# 미디어 URL (CDN 붙이기 전 간단 버전)
+
+# --- NCP Object Storage(S3 호환) ---
+AWS_ACCESS_KEY_ID        = os.getenv("NCP_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY    = os.getenv("NCP_SECRET_KEY")
+AWS_STORAGE_BUCKET_NAME  = os.getenv("NCP_BUCKET")
+AWS_S3_REGION_NAME       = os.getenv("NCP_REGION", "kr-standard")
+AWS_S3_ENDPOINT_URL      = os.getenv("NCP_ENDPOINT", "https://kr.object.ncloudstorage.com")
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+# 업로드 기본 ACL (테스트는 공개 읽기, 운영은 CDN + 프라이빗 권장)
+AWS_DEFAULT_ACL = "public-read"
+
+DEFAULT_AUTO_FIELD = "storages.backends.s3boto3.S3Boto3Storage"
+
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.kr.object.ncloudstorage.com/"
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 #
 
 # Quick-start development settings - unsuitable for production
@@ -57,7 +70,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     'main_page',
-    'board'
+    'board',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -144,4 +158,3 @@ STATICFILES_DIRS = [
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

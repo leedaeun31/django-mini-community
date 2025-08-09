@@ -5,15 +5,28 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from .models import Post, Comment
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
+from django.core.paginator import Paginator # 페이지네이션 작업, 페이지별 나누기
+from django.db import transaction
 import json
-from django.utils import timezone
-
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
 
 # Create your views here.
+
+@login_required
+@require_POST
+def delete_post_image(request, post_id, image_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user != post.author:
+        return HttpResponseForbidden("권한 없음")
+
+    img = get_object_or_404(PostImage, id=image_id, post=post)
+    img.image.delete(save=False)
+    img.delete()
+    return JsonResponse({"ok": True})
 
 @login_required  # 게시글 업로드
 def upload_post(request, slug):
@@ -68,7 +81,9 @@ def post_detail(request, slug, post_id):
                 comment.delete()
 
         return redirect("board:post_detail", slug=slug, post_id=post.id)
-    return render(request, "board/posts/post_detail.html", {"post": post, "comments": comments}) 
+    text_for_textarea=(post.text.replace("<br />", "\n"))
+    return render(request, "board/posts/post_detail.html", {"post": post, "comments": comments, "text_for_textarea":text_for_textarea }) 
+
 
 
 @login_required  # 게시물 수정
@@ -81,24 +96,47 @@ def edit_post(request, slug, post_id):
         return redirect("board:post_detail", slug=slug, post_id=post_id)
 
     if request.method == "POST":
-        title = request.POST.get('title')
-        text = request.POST.get('text')
-        images = request.FILES.getlist('images')
+        title = request.POST.get('title', '').strip()
+        text = request.POST.get('text', '').strip()
+        new_images = request.FILES.getlist('images')  # 새로 추가할 이미지들
+        delete_ids = request.POST.getlist('delete_images')  # 프론트에서 보낸 삭제할 기존 이미지 id 리스트
+
         if not title:
             messages.error(request, "제목을 입력하세요")
             return redirect("board:edit_post", slug=slug, post_id=post.id)
-        post.title = title
-        post.text = text
 
-        if images:
-            post.images.all().delete()
-            for img in images:
-                PostImage.objects.create(post=post,image=img)
+        # 총합 5장 제한 체크 (남길 기존 + 새로 추가)
+        # 남길 기존: 현재 기존 이미지 중 삭제 리스트에 없는 것들만 카운트
+        keep_existing_count = post.images.exclude(id__in=delete_ids).count()
+        total_after = keep_existing_count + len(new_images)
+        if total_after > 5:
+            messages.error(request, "이미지는 최대 5장까지 업로드할 수 있습니다. (기존 + 새로운 이미지 합산)")
+            return redirect("board:edit_post", slug=slug, post_id=post.id)
 
-        post.save()
+        try:
+            with transaction.atomic():
+                # 본문/제목 업데이트
+                post.title = title
+                post.text = text
+                post.save()
+
+                # 🔥 선택 삭제: 체크된 기존 이미지만 삭제
+                if delete_ids:
+                    PostImage.objects.filter(post=post, id__in=delete_ids).delete()
+
+                # 새 이미지 추가
+                for img in new_images:
+                    PostImage.objects.create(post=post, image=img)
+
+        except Exception as e:
+            messages.error(request, f"수정 중 오류가 발생했습니다: {e}")
+            return redirect("board:edit_post", slug=slug, post_id=post.id)
+
         messages.success(request, "게시글이 수정되었습니다.")
         return redirect("board:post_detail", slug=slug, post_id=post.id)
-    return render(request, "board/posts/edit_post.html", {"post": post})
+    
+    text_for_textarea=(post.text.replace("<br />", "\n"))
+    return render(request, "board/posts/edit_post.html", {"post": post,  "text_for_textarea": text_for_textarea})
 
 @login_required  # 게시글 삭제
 def delete_post(request, slug, post_id):
@@ -233,7 +271,18 @@ def room_detail(request, slug):
         return redirect("main_page:main")
 
     posts = Post.objects.filter(room=room).order_by("-created_at")
-    return render(request, "board/room_detail.html", {"room": room, "posts": posts})
+
+    per_page = request.GET.get('per_page', 5)
+    paginator = Paginator(posts, per_page)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'room': room,
+        'posts': page_obj,
+        'per_page': per_page
+    }
+    return render(request, "board/room_detail.html",context)
 
 @login_required
 def check_session(request, slug):

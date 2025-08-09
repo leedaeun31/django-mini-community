@@ -58,8 +58,29 @@
     .user-info {
         font-size: 18px;
         display: flex; 
-    align-items: center;
+        align-items: center;
     }
+
+    /* 모바일 화면 대응 */
+    @media screen and (max-width: 768px) {
+        #header_title {
+            font-size: 20px; /* 제목 글자 크기 축소 */
+        }
+        nav ul {
+            justify-content: center; /* 중앙 정렬 */
+        }
+        nav ul li {
+            margin-left: 20px; /* 간격 줄이기 */
+            font-size: 14px; /* nav 글자 크기 축소 */
+        }
+        nav ul li a {
+            font-size: 14px; /* 링크 글자 크기 축소 */
+        }
+        .user-info {
+            font-size: 14px; /* 사용자 정보 글자 크기 축소 */
+        }
+    }
+
 </style>
 
 <body>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>{{ room.name }}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+ 
     <link rel="icon" href="data:,">
     <style>
         #header_title {
@@ -18,6 +18,8 @@
             background-color: #ffffffb9;
             padding: 10px 40px;
             box-sizing: border-box;
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         nav ul {
@@ -27,12 +29,14 @@
             list-style: none;
             margin: 0;
             padding: 0;
+            min-width: max-content;
         }
 
         nav ul li {
             margin-left: 40px;
             font-weight: bold;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         nav ul li a {
@@ -108,12 +112,40 @@
             font-size: 16px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+            white-space: nowrap;
         }
 
         .invite-btn:hover {
             background: rgba(253, 107, 222, 0.8);
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(236, 173, 223, 0.4);
+        }
+
+        /* 페이지네이션 설정 섹션 */
+        .pagination-settings {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(236, 173, 223, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(236, 173, 223, 0.2);
+        }
+
+        .per-page-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .per-page-selector select {
+            padding: 5px 10px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         /* 게시물 목록 */
@@ -180,13 +212,30 @@
             overflow: hidden;
         }
 
-        .image-slider img {
+        .image-slider .viewport {
+            position: relative;
             width: 100%;
-            max-height: 400px;
+            aspect-ratio: 4 / 3;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .image-slider img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             display: none;
-            object-fit: cover;
             transition: opacity 0.3s ease;
-            border-radius: 8px;
         }
 
         .image-slider img.active {
@@ -206,10 +255,12 @@
             border-radius: 50%;
             transition: all 0.3s ease;
             box-shadow: 0 2px 10px rgba(236, 173, 223, 0.4);
+            z-index: 10;
         }
 
         .image-slider button:hover {
             background: #ecaddfb9;
+            color: white;
             transform: translateY(-50%) scale(1.1);
         }
 
@@ -268,6 +319,45 @@
             font-weight: 600;
         }
 
+        /* 페이지네이션 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 2px solid rgba(236, 173, 223, 0.3);
+            background: white;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .pagination a:hover {
+            background: #ecaddfb9;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .pagination .current {
+            background: #ecaddfb9;
+            color: white;
+            border-color: #ecaddfb9;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            border-color: #eee;
+        }
+
         /* 빈 상태 메시지 */
         .empty-message {
             text-align: center;
@@ -306,6 +396,19 @@
 
         /* 반응형 디자인 */
         @media (max-width: 768px) {
+            #header_title {
+                font-size: 24px;
+            }
+
+            nav {
+                padding: 10px 20px;
+            }
+
+            nav ul li {
+                margin-left: 20px;
+                font-size: 16px;
+            }
+
             .main-container {
                 margin: 15px;
                 padding: 15px;
@@ -320,21 +423,28 @@
                 width: 100%;
             }
 
+            .invite-btn {
+                width: 100%;
+                padding: 12px 20px;
+            }
+
+            .pagination-settings {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
             .post-title-link {
                 font-size: 1.1rem;
             }
 
-            .image-slider {
-                max-width: 100%;
-            }
-
-            .image-slider img {
-                max-height: 150px;
+            .image-slider .viewport {
+                aspect-ratio: 16 / 9; /* 모바일에서는 더 넓은 비율 */
             }
 
             .image-slider button {
-                padding: 6px 10px;
-                font-size: 14px;
+                padding: 8px 10px;
+                font-size: 12px;
             }
 
             .post-meta {
@@ -343,19 +453,37 @@
                 text-align: center;
             }
 
-            nav {
-                padding: 10px 20px;
+            .pagination {
+                gap: 5px;
             }
 
-            nav ul li {
-                margin-left: 20px;
-                font-size: 16px;
+            .pagination a, .pagination span {
+                padding: 6px 10px;
+                font-size: 14px;
             }
         }
 
         @media (max-width: 480px) {
+            #header_title {
+                font-size: 20px;
+                margin: 15px 0;
+            }
+
+            nav {
+                padding: 8px 15px;
+            }
+
+            nav ul li {
+                margin-left: 15px;
+                font-size: 14px;
+            }
+
+            nav ul li a {
+                font-size: 14px;
+            }
+
             .posts-title {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
                 flex-direction: column;
                 gap: 8px;
                 text-align: center;
@@ -372,6 +500,30 @@
             .empty-icon {
                 font-size: 2rem;
             }
+
+            .pagination a, .pagination span {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+        }
+
+        /* 로딩 상태 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: "...";
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ""; }
+            33% { content: "."; }
+            66% { content: ".."; }
+            100% { content: "..."; }
         }
     </style>
 </head>
@@ -416,55 +568,89 @@
             <h3 class="posts-title">
                 📝 게시물 목록
                 {% if posts %}
-                    <span class="post-count">{{ posts|length }}</span>
+                    <span class="post-count">{{ posts.paginator.count }}</span>
                 {% endif %}
             </h3>
 
-            {% if posts %}
-                {% for post in posts %}
-                    <div class="post-item">
-                        <a href="{% url 'board:post_detail' room.slug post.id %}" class="post-title-link">
-                            {{ post.title }}
-                        </a>
+            <div id="posts-container">
+                {% if posts %}
+                    {% for post in posts %}
+                        <div class="post-item">
+                            <a href="{% url 'board:post_detail' room.slug post.id %}" class="post-title-link">
+                                {{ post.title }}
+                            </a>
 
-                        {% if post.images.all %}
-                            <div class="image-slider">
-                                {% for img in post.images.all %}
-                                    <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}" alt="게시물 이미지">
-                                {% endfor %}
-                                {% if post.images.count > 1 %}
-                                    <button class="prev">◀</button>
-                                    <button class="next">▶</button>
-                                {% endif %}
-                            </div>
-                        {% elif post.text %}
-                            <div class="post-preview">
-                                {{ post.text|truncatechars:100 }}
-                            </div>
-                        {% endif %}
+                            {% if post.images.all %}
+                                <div class="image-slider">
+                                    <div class="viewport">
+                                        {% for img in post.images.all %}
+                                            <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}" alt="게시물 이미지">
+                                        {% endfor %}
+                                    </div>
+                                    {% if post.images.count > 1 %}
+                                        <button class="prev">◀</button>
+                                        <button class="next">▶</button>
+                                    {% endif %}
+                                </div>
+                            {% elif post.text %}
+                                <div class="post-preview">
+                                    {{ post.text|truncatechars:100|linebreaksbr }}
+                                </div>
+                            {% endif %}
 
-                        <div class="post-meta">
-                            <div class="post-author">
-                                {% if post.author.user_profile_image %}
-                                    <img src="{{ post.author.user_profile_image.url }}" alt="프로필">
-                                {% else %}
-                                    <img src="{% static 'images/default_profile.png' %}" alt="기본 프로필">
-                                {% endif %}
-                                <span>{{ post.author.username }} · 📅 {{ post.created_at|date:"Y-m-d H:i" }}</span>
-                            </div>
-                            <div class="comment-count">
-                                💬 댓글 {{ post.comment_count }}
+                            <div class="post-meta">
+                                <div class="post-author">
+                                    {% if post.author.user_profile_image %}
+                                        <img src="{{ post.author.user_profile_image.url }}" alt="프로필">
+                                    {% else %}
+                                        <img src="{% static 'images/default_profile.png' %}" alt="기본 프로필">
+                                    {% endif %}
+                                    <span>{{ post.author.username }} · 📅 {{ post.created_at|date:"Y-m-d H:i" }}</span>
+                                </div>
+                                <div class="comment-count">
+                                    💬 댓글 {{ post.comment_count }}
+                                </div>
                             </div>
                         </div>
+                    {% endfor %}
+
+                    <!-- 페이지네이션 -->
+                    {% if posts.has_other_pages %}
+                        <div class="pagination">
+                            {% if posts.has_previous %}
+                                <a href="?page=1&per_page={{ per_page }}">&laquo; 첫페이지</a>
+                                <a href="?page={{ posts.previous_page_number }}&per_page={{ per_page }}">‹</a>
+                            {% else %}
+                                <span class="disabled">&laquo; 첫페이지</span>
+                                <span class="disabled">‹</span>
+                            {% endif %}
+
+                            {% for num in posts.paginator.page_range %}
+                                {% if posts.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% elif num > posts.number|add:'-3' and num < posts.number|add:'3' %}
+                                    <a href="?page={{ num }}&per_page={{ per_page }}">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if posts.has_next %}
+                                <a href="?page={{ posts.next_page_number }}&per_page={{ per_page }}">›</a>
+                                <a href="?page={{ posts.paginator.num_pages }}&per_page={{ per_page }}">마지막 페이지 &raquo;</a>
+                            {% else %}
+                                <span class="disabled">›</span>
+                                <span class="disabled"> 마자막 페이지 &raquo;</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <div class="empty-message">
+                        <div class="empty-icon">📝</div>
+                        <div class="empty-text">아직 게시글이 없습니다</div>
+                        <div class="empty-subtext">첫 번째 게시물을 작성해보세요!</div>
                     </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-message">
-                    <div class="empty-icon">📝</div>
-                    <div class="empty-text">아직 게시글이 없습니다</div>
-                    <div class="empty-subtext">첫 번째 게시물을 작성해보세요!</div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -488,6 +674,15 @@
             alert("방 링크가 복사되었습니다! 📋");
         }
 
+        // 페이지당 게시물 수 변경
+        function changePerPage() {
+            const perPage = document.getElementById('perPage').value;
+            const url = new URL(window.location);
+            url.searchParams.set('per_page', perPage);
+            url.searchParams.set('page', '1'); // 첫 페이지로 이동
+            window.location.href = url.toString();
+        }
+
         // 이미지 슬라이더 기능
         document.querySelectorAll(".image-slider").forEach(slider => {
             const images = slider.querySelectorAll("img");
@@ -495,7 +690,7 @@
             const next = slider.querySelector(".next");
             let current = 0;
 
-            if (prev && next) {
+            if (prev && next && images.length > 1) {
                 prev.addEventListener("click", (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -530,7 +725,7 @@
         // 게시물 아이템 클릭 시 애니메이션
         document.querySelectorAll('.post-item').forEach(item => {
             item.addEventListener('click', function(e) {
-                if (e.target.tagName !== 'BUTTON') {
+                if (e.target.tagName !== 'BUTTON' && !e.target.closest('.image-slider button')) {
                     const link = this.querySelector('.post-title-link');
                     if (link) {
                         window.location.href = link.href;
@@ -544,44 +739,45 @@
             this.select();
         });
 
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     const roomSlug = "{{ room.slug }}";
+        // 키보드 탐색 지원
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) return;
+            
+            const pagination = document.querySelector('.pagination');
+            if (!pagination) return;
 
-        //     fetch(`/board/${roomSlug}/check_session/`, {
-        //         method: "GET",
-        //         headers: {
-        //             "X-CSRFToken": "{{ csrf_token }}",
-        //         },
-        //     })
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         if (!data.authenticated) {
-        //             const pin = prompt("이 방은 비밀번호가 필요합니다. PIN을 입력해주세요:");
-        //             if (pin !== null) {
-        //                 fetch("{% url 'board:check_pin' room.slug %}", {
-        //                     method: "POST",
-        //                     headers: {
-        //                         "Content-Type": "application/json",
-        //                         "X-CSRFToken": "{{ csrf_token }}",
-        //                     },
-        //                     body: JSON.stringify({ pin: pin })
-        //                 })
-        //                 .then(response => response.json())
-        //                 .then(data => {
-        //                     if (data.success) {
-        //                         window.location.reload();
-        //                     } else {
-        //                         alert("PIN이 올바르지 않습니다.");
-        //                         window.location.href = "{% url 'main_page:main' %}";
-        //                     }
-        //                 });
-        //             } else {
-        //                 window.location.href = "{% url 'main_page:main' %}";
-        //             }
-        //         }
-        //         // 인증이 되어 있으면 아무 일도 하지 않고 페이지 그대로 유지
-        //     });
-        // });
+            if (e.key === 'ArrowLeft') {
+                const prevLink = pagination.querySelector('a[href*="previous"]') || 
+                                pagination.querySelector('a:contains("이전")');
+                if (prevLink && !prevLink.classList.contains('disabled')) {
+                    window.location.href = prevLink.href;
+                }
+            } else if (e.key === 'ArrowRight') {
+                const nextLink = pagination.querySelector('a[href*="next"]') || 
+                                pagination.querySelector('a:contains("다음")');
+                if (nextLink && !nextLink.classList.contains('disabled')) {
+                    window.location.href = nextLink.href;
+                }
+            }
+        });
+
+        // 뒤로가기/앞으로가기 대응
+        window.addEventListener('popstate', function(e) {
+            location.reload();
+        });
+
+        // 로딩 상태 표시
+        function showLoading() {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '<div class="loading">게시물을 불러오는 중</div>';
+        }
+
+        // 페이지네이션 링크에 로딩 상태 추가
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                showLoading();
+            });
+        });
     </script>
 </body>
 </html>

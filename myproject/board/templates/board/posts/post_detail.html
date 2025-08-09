@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>{{ post.room.name }}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="icon" href="data:,">
     <style>
          #header_title {
@@ -96,21 +95,38 @@
             font-weight: 500;
         }
 
-        /* 이미지 슬라이더 개선 */
+        /* 이미지 슬라이더 개선 - 데스크톱 */
         .image-slider {
             position: relative;
             max-width: 100%;
             margin: 25px 0;
             border-radius: 15px;
             overflow: hidden;
-          
+        }
+
+        .image-slider .viewport {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: #ffffff;  /* 여백 색상을 흰색으로 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 15px;
         }
 
         .image-slider img {
-            width: 100%;
-            max-height: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);  /* 정확한 중앙 배치 */
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;  /* 이미지 잘림 방지 */
             display: none;
-            object-fit: cover;
             transition: opacity 0.3s ease;
         }
 
@@ -130,7 +146,8 @@
             font-size: 8px;
             border-radius: 50%;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10x rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10;  /* 버튼이 이미지 위에 표시되도록 */
         }
 
         .image-slider button:hover {
@@ -377,6 +394,48 @@
                 font-size: 8px;
             }
 
+            /* 모바일 이미지 슬라이더 수정 */
+            .image-slider {
+                position: relative;
+                max-width: 100%;
+                margin: 25px 0;
+                border-radius: 15px;
+                overflow: hidden;
+            }
+
+            .image-slider .viewport { 
+                position: relative;
+                width: 100%;
+                aspect-ratio: 4 / 3;
+                background: #ffffff;  /* 모바일에서도 흰색 여백 */
+                border-radius: 15px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .image-slider img {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);  /* 정확한 중앙 배치 */
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+                object-fit: contain;  /* 잘림 방지 */
+                opacity: 0;  /* 기본은 숨김 */
+                pointer-events: none;
+                transition: opacity 0.25s ease;
+            }
+
+            /* 활성 이미지만 보이도록 */
+            .image-slider img.active {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
             .comments-title {
                 font-size: 1.3rem;
             }
@@ -446,9 +505,11 @@
         <!-- 이미지 슬라이더 -->
         {% if post.images.all %}
             <div class="image-slider">
-                {% for img in post.images.all %}
-                    <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}">
-                {% endfor %}
+                <div class="viewport">
+                    {% for img in post.images.all %}                    
+                    <img src="{{ img.image.url }}" class="{% if forloop.first %}active{% endif %}">                
+                    {% endfor %}
+                </div>
                 {% if post.images.count > 1 %}
                     <button class="prev">◀</button>
                     <button class="next">▶</button>
@@ -458,7 +519,7 @@
 
         <!-- 게시물 내용 -->
         {% if post.text %}
-            <div class="post-content">{{ post.text }}</div>
+            <div class="post-content">{{ post.text|linebreaksbr }}</div>
         {% endif %}
 
         <!-- 게시물 액션 버튼 -->
@@ -497,12 +558,12 @@
                             </div>
 
                             {% if request.user == comment.author and request.GET.edit == comment.id|stringformat:"s" %}
-                                <textarea name="comment" rows="3" class="edit-textarea">{{ comment.text }}</textarea>
+                                <textarea name="comment" rows="3" class="edit-textarea">{{ comment.text|linebreaksbr }}</textarea>
                                 <div class="comment-actions" style="margin-top: 10px;">
                                     <button type="submit" name="action" value="edit" class="edit-submit">✅ 수정 완료</button>
                                 </div>
                             {% else %}
-                                <div class="comment-text">{{ comment.text }}</div>
+                                <div class="comment-text">{{ comment.text|linebreaksbr }}</div>
                             {% endif %}
 
                             {% if request.user == comment.author and request.GET.edit != comment.id|stringformat:"s" %}
@@ -563,13 +624,43 @@
             });
         });
 
-        // 댓글 작성 시 자동 포커스
-        const commentTextarea = document.querySelector('.comment-form textarea');
-        if (commentTextarea) {
-            commentTextarea.addEventListener('focus', function() {
-                this.style.borderColor = '#ecaddfb9';
+        (function () {
+            const textarea = document.querySelector('.comment-form textarea[name="comment"]');
+            if (!textarea) return;
+
+            // 중복 전송 방지 플래그
+            let sending = false;
+
+            textarea.addEventListener('keydown', function (e) {
+            // IME 조합 중(한글 입력 중)에는 전송 막기
+            if (e.isComposing) return;
+
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+
+                const form = this.closest('form');
+                if (!form || sending) return;
+
+                const value = this.value.trim();
+                if (!value) return; // 빈 댓글은 무시
+
+                // 버튼 click이 아니라 form.submit()로 보내므로,
+                // 서버가 action 값을 기대한다면 hidden input으로 넣어줌
+                if (!form.querySelector('input[name="action"]')) {
+                const hidden = document.createElement('input');
+                hidden.type  = 'hidden';
+                hidden.name  = 'action';
+                hidden.value = 'create';
+                form.appendChild(hidden);
+                } else {
+                form.querySelector('input[name="action"]').value = 'create';
+                }
+
+                sending = true;
+                form.submit();
+            }
             });
-        }
+        })();
     </script>
 </body>
 </html>

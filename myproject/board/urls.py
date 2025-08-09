@@ -4,6 +4,8 @@ from . import views
 app_name='board'
 
 urlpatterns=[
+    #path('<uuid:slug>/posts/',views.room_posts, name='room_posts'),
+    path('<uuid:slug>/posts/<int:post_id>/edit/images/<int:image_id>/delete/',views.delete_post_image,name='delete_post_image'), 
     path("<slug:slug>/check_session/", views.check_session, name="check_session"),
     path('<uuid:slug>/check_pin/', views.check_pin, name='check_pin'),
     path('<uuid:slug>/posts/<int:post_id>/',views.post_detail,name='post_detail'), # 게시글 생성 url

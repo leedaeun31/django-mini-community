@@ -10,11 +10,30 @@ from django.core.paginator import Paginator # 페이지네이션 작업, 페이�
 from django.db import transaction
 import json
 from django.contrib.auth.decorators import login_required
-
+from functools import wraps
+from django.utils import timezone
 User = get_user_model()
 
 
 # Create your views here.
+
+# --- 제재 가드: POST(쓰기)만 막기 ---
+
+def require_not_restricted_post(view_func):
+    """사용자 제재 상태(뮤트/정지/비활성화)일 때 POST 요청을 차단"""
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if request.method == "POST" and request.user.is_authenticated:
+            d = getattr(request.user, "discipline", None)  # UserDiscipline 1:1
+            now = timezone.now()
+            if d and ((d.muted_until and d.muted_until > now)
+                      or (d.suspended_until and d.suspended_until > now)
+                      or d.banned_at):
+                return HttpResponseForbidden("현재 활동이 제한되어 있습니다.")
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+# ------------------------------------
+
 
 @login_required
 @require_POST
@@ -29,6 +48,7 @@ def delete_post_image(request, post_id, image_id):
     return JsonResponse({"ok": True})
 
 @login_required  # 게시글 업로드
+@require_not_restricted_post
 def upload_post(request, slug):
     room = get_object_or_404(Room, slug=slug)
 
@@ -55,6 +75,7 @@ def upload_post(request, slug):
     return render(request, "board/posts/upload_post.html", {"room": room}) 
 
 @login_required  # 게시글 댓글 작성
+@require_not_restricted_post
 def post_detail(request, slug, post_id):
     post = get_object_or_404(Post, id=post_id, room__slug=slug)
     comments = post.comments.all().order_by("-created_at")
@@ -87,6 +108,7 @@ def post_detail(request, slug, post_id):
 
 
 @login_required  # 게시물 수정
+@require_not_restricted_post
 def edit_post(request, slug, post_id):
     post = get_object_or_404(Post, id=post_id, room__slug=slug)
 
@@ -225,6 +247,7 @@ def leave_room(request, slug):
 
 
 @login_required  # 로그인 상태에서만
+@require_not_restricted_post
 def create_room(request):
     if request.method == 'POST':
         name = request.POST['name']
@@ -258,6 +281,16 @@ def check_pin(request, slug):
 @login_required
 def room_detail(request, slug):
     room = get_object_or_404(Room, slug=slug)
+
+     # ✅ 스태프(관리자)는 바로 입장 허용 (참여자/PIN 검사 우회)
+    if request.user.is_staff:
+        posts = Post.objects.filter(room=room).order_by("-created_at")
+        per_page = request.GET.get('per_page', 5)
+        paginator = Paginator(posts, per_page)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+        context = {'room': room, 'posts': page_obj, 'per_page': per_page}
+        return render(request, "board/room_detail.html", context)
 
     try:
         user_room = UserRoom.objects.get(user=request.user, room=room)

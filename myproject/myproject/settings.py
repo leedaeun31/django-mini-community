@@ -12,10 +12,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
-# 환경변수 (예: 네이버 로그인)
+# 환경변수
 NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
 NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
 NAVER_CALLBACK_URL = os.getenv("NAVER_CALLBACK_URL")
+URL=os.getenv("NAVER_URL")
 
 # 사용자 모델
 AUTH_USER_MODEL = 'user.User'
@@ -39,11 +40,39 @@ INSTALLED_APPS = [
     'user',
     'main_page',
     'board',
+    'moderation',
+    #'policies',
+    #'django.contrib.sites' 
     # 'storages',  # 로컬 저장이므로 제거
 ]
 
+SITE_ID=1
+SITE_URL=URL
+
+POLICIEES_VERSIONS={
+    "terms": 1, # 이용약관/가이드라인
+    "guidlines":1, # 커뮤니티 가이드
+    "moderation":1, # 신고/제재 운영 원칙
+}
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = "smtp.naver.com"
+EMAIL_PORT = 587                 # TLS(STARTTLS)
+EMAIL_USE_TLS = True  
+EMAIL_HOST_PASSWORD=os.getenv("NAVER_SMTP_PASS")
+DEFAULT_FROM_EMAIL=os.getenv("EMAIL")
+EMAIL_HOST_USER=os.getenv("EMAIL")
+EMAIL_TIMEOUT = 10      
+ADMINS=[("운영자",EMAIL_HOST_USER)]
+
+RL_MAX_POST=10
+RL_WINDOW_SECONDS=60
+RL_EXEMPT_PATH_PREFIXES =  ["/admin/", "/users/login", "/users/logout", "/policies/"]
+
 # 미들웨어
 MIDDLEWARE = [
+    "policies.middleware.PolicyRequiredMiddleware",    # 로그인 후 정책 동의 강제
+    "utils.middlewares.RateLimitPostMiddleware",       # POST 속도 제한
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

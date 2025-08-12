@@ -28,13 +28,6 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
-class UserRoom(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    authenticated = models.BooleanField(default=False)
-    class Meta:
-        unique_together = ('user', 'room')
-
 # 게시물 업로드
 class Post(models.Model):
     room=models.ForeignKey(Room,on_delete=models.CASCADE, related_name="posts") # 방 삭제시 게시글도 삭제

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신고하기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #f0f0f0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ecaddfb9, rgba(236, 173, 223, 0.8));
+            padding: 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .back-button::before {
+            content: '←';
+            font-size: 18px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .header h2 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .target-info {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            margin-top: 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .target-info p {
+            color: #fff;
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .form-content {
+            padding: 32px 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ecaddfb9;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(236, 173, 223, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, #ecaddfb9, rgba(236, 173, 223, 0.9));
+            color: white;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 173, 223, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 173, 223, 0.4);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                border-radius: 12px;
+                margin: 10px 0;
+            }
+
+            .header {
+                padding: 20px 16px;
+            }
+
+            .back-button {
+                left: 16px;
+                width: 36px;
+                height: 36px;
+            }
+
+            .header h2 {
+                font-size: 20px;
+            }
+
+            .form-content {
+                padding: 24px 16px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 16px; /* iOS 줌 방지 */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h2 {
+                font-size: 18px;
+                padding-right: 20px;
+            }
+
+            .target-info {
+                padding: 10px 16px;
+                margin-top: 12px;
+            }
+
+            .form-content {
+                padding: 20px 12px;
+            }
+        }
+
+        /* 접근성 향상 */
+        .form-group input:invalid,
+        .form-group textarea:invalid {
+            border-color: #ff6b6b;
+        }
+
+        .form-group input:valid,
+        .form-group textarea:valid {
+            border-color: #51cf66;
+        }
+
+        /* 애니메이션 효과 */
+        .container {
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 로딩 상태 */
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 다크모드 대응 (선택사항) */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #f8f9fa;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="back-button" onclick="goBack()" aria-label="이전 페이지로 돌아가기"></button>
+            <h2>신고하기</h2>
+        </div>
+
+        <div class="form-content">
+            <form method="post" id="reportForm">
+                {% csrf_token %}
+                
+                <!-- Django 폼 필드들을 예시로 구현 -->
+                <div class="form-group">
+                    <label for="reason">신고 사유</label>
+                    <select id="reason" name="reason" required>
+                        <option value="">신고 사유를 선택하세요</option>
+                        <option value="spam">스팸/도배</option>
+                        <option value="inappropriate">부적절한 내용</option>
+                        <option value="harassment">괴롭힘/욕설</option>
+                        <option value="fake">허위 정보</option>
+                        <option value="copyright">저작권 침해</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">상세 설명</label>
+                    <textarea id="description" name="description" placeholder="신고 내용을 자세히 설명해 주세요..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-button" id="submitBtn">
+                    신고 접수
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/'; // 홈페이지로 이동
+            }
+        }
+
+        // 폼 제출 시 로딩 상태 표시
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '접수 중...';
+            
+            // 실제 제출이 실패하면 버튼 상태 복원
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '신고 접수';
+            }, 5000);
+        });
+
+        // 입력 필드 애니메이션 효과
+        document.querySelectorAll('input, textarea, select').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+                this.parentElement.style.transition = 'transform 0.2s ease';
+            });
+            
+            field.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

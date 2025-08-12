@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path("", include("moderation.urls")),
     path('board/',include('board.urls')),
     path('users/', include(('user.urls', 'user'), namespace='user')), 
     path('',include('main_page.urls')),

@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'main_page',
     'board',
     'moderation',
-    #'policies',
-    #'django.contrib.sites' 
+    'django.contrib.sites' 
     # 'storages',  # 로컬 저장이므로 제거
 ]
 
@@ -71,8 +70,8 @@ RL_EXEMPT_PATH_PREFIXES =  ["/admin/", "/users/login", "/users/logout", "/polici
 
 # 미들웨어
 MIDDLEWARE = [
-    "policies.middleware.PolicyRequiredMiddleware",    # 로그인 후 정책 동의 강제
-    "utils.middlewares.RateLimitPostMiddleware",       # POST 속도 제한
+    #"policies.middleware.PolicyRequiredMiddleware",    # 로그인 후 정책 동의 강제
+    #"utils.middlewares.RateLimitPostMiddleware",       # POST 속도 제한
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

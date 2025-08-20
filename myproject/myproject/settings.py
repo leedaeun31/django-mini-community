@@ -54,15 +54,15 @@ POLICIEES_VERSIONS={
     "moderation":1, # 신고/제재 운영 원칙
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# SMTP 설정 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.naver.com"
 EMAIL_PORT = 587                 # TLS(STARTTLS)
 EMAIL_USE_TLS = True  
-EMAIL_HOST_PASSWORD=os.getenv("NAVER_SMTP_PASS")
-DEFAULT_FROM_EMAIL=os.getenv("EMAIL")
-EMAIL_HOST_USER=os.getenv("EMAIL")
-EMAIL_TIMEOUT = 10      
-ADMINS=[("운영자",EMAIL_HOST_USER)]
+EMAIL_HOST_PASSWORD=os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL=os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_USER=os.getenv("EMAIL_HOST_USER")   
+
 
 RL_MAX_POST=10
 RL_WINDOW_SECONDS=60

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>이용약관 동의</title>
+    </head>
+<body>
+    <div>
+        <h1>회원가입 약관 동의</h1>
+        <p>서비스를 이용하시려면 아래 약관에 동의해주세요.</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div>
+                <h3>서비스 이용약관</h3>
+                <textarea readonly rows="8" style="width: 100%;">
+제1조 (목적)
+이 약관은 ... (이용약관 내용)
+                </textarea>
+                <br>
+                <input type="checkbox" name="agree" id="terms_agree" required>
+                <label for="terms_agree">서비스 이용약관에 모두 동의합니다.</label>
+            </div>
+            
+            <hr>
+            
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <p style="color: red;">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button type="submit">동의하고 가입하기</button>
+        </form>
+    </div>
+</body>
+</html>

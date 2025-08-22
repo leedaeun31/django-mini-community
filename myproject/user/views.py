@@ -16,29 +16,31 @@ callback_url = settings.NAVER_CALLBACK_URL
 @login_required
 def mypage(request):
     if request.method == "POST":
-        username = request.POST.get("username")
-
-        if username:
-            # username이 코난이면 기존 이미지 삭제
-            if "코난" in username or "탐정" in username:
+        # 닉네임 변경 처리
+        if 'nickname' in request.POST:
+            nickname = request.POST.get("nickname")
+            if "코난" in nickname or "탐정" in nickname:
                 if request.user.user_profile_image:
                     request.user.user_profile_image.delete(save=False)
-                    request.user.user_profile_image = None
-
-            request.user.username = username
+            request.user.nickname = nickname
             request.user.save()
-            messages.success(request, "이름이 성공적으로 변경되었습니다!")
+            messages.success(request, "닉네임이 성공적으로 변경되었습니다!")
             return redirect("user:mypage")
         
-        profile_image = request.FILES.get("profile_image")
-
-        if profile_image:
-            request.user.user_profile_image = profile_image
-            request.user.save()
-            messages.success(request, "프로필 이미지가 성공적으로 업로드되었습니다.")
-            return redirect("user:mypage")
-
-    return render(request, 'mypage.html')
+        # 프로필 이미지 변경 처리
+        if 'profile_image' in request.FILES:
+           user = request.user
+           new_image = request.FILES.get("profile_image")
+           if user.user_profile_image and 'default_profile.png' not in user.user_profile_image.name:
+                # 2. 이전 이미지 파일을 저장소에서 삭제합니다.
+                user.user_profile_image.delete(save=False)
+           user.user_profile_image = new_image
+           user.save()
+           request.user.save()
+           messages.success(request, "프로필 이미지가 성공적으로 변경되었습니다.")
+           return redirect("user:mypage")
+            
+    return render(request, "mypage.html")
 
 
 def login_page(request):

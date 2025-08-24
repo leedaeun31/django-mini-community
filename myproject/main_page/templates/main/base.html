@@ -1,90 +1,146 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌟다은이의 웹 페이지 입니당🌟</title>
- 
     <link rel="icon" href="data:,">
-</head>
-<style>
-    /* 제목(header) 가운데 정렬 */
-    body {
-    background-color: #ffffff;
-    }
-    /* header와 nav 스타일 적용 */
-    #header_title {
-        text-align: center;
-        font-size: 28px;
-        margin: 25px 0;
-    }
-    nav {
-        width: 100%;
-        background-color: #ffffffb9;
-        padding: 10px 40px;
-        box-sizing: border-box;
-    }
-    nav ul {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    nav ul li {
-        margin-left: 40px;
-        font-weight: bold;
-        font-size: 18px;
-    }
-    nav ul li a {
-        text-decoration: none;
-        color: #000000b9;
-        font-size: 18px;
-    }
-    .user-info {
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-    }
-    /* 구분선 스타일링 */
-    hr {
-        border: none;
-        height: 2px;
-        background: #c8c6c6dd;
-        margin: 30px 0;
-    }
-    .user-info {
-        font-size: 18px;
-        display: flex; 
-        align-items: center;
-    }
-
-    /* 모바일 화면 대응 */
-    @media screen and (max-width: 768px) {
+    <style>
+        /* 기본 스타일 */
+        body {
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
         #header_title {
-            font-size: 20px; /* 제목 글자 크기 축소 */
+            text-align: center;
+            font-size: 28px;
+            margin: 25px 0;
+        }
+        nav {
+            width: 100%;
+            background-color: #ffffffb9;
+            padding: 10px 40px;
+            box-sizing: border-box;
         }
         nav ul {
-            justify-content: center; /* 중앙 정렬 */
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
         nav ul li {
-            margin-left: 20px; /* 간격 줄이기 */
-            font-size: 14px; /* nav 글자 크기 축소 */
+            margin-left: 40px;
+            font-weight: bold;
+            font-size: 18px;
         }
         nav ul li a {
-            font-size: 14px; /* 링크 글자 크기 축소 */
+            text-decoration: none;
+            color: #000000b9;
+            font-size: 18px;
         }
-        .user-info {
-            font-size: 14px; /* 사용자 정보 글자 크기 축소 */
+        .user-info { /* ✅ 중복 제거하고 하나만 남겼습니다. */
+            font-size: 18px;
+            display: flex;
+            align-items: center;
         }
-    }
+        hr {
+            border: none;
+            height: 2px;
+            background: #c8c6c6dd;
+            margin: 30px 0;
+        }
 
-</style>
+        /* 모달 스타일 */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%); margin: 2% auto; padding: 0;
+            border-radius: 16px; width: 90%; max-width: 700px; max-height: 90vh;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); animation: slideUp 0.4s ease-out;
+            overflow: hidden; position: relative;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #f8daf2 0%, #e8c5dd 100%); color: #2d3748;
+            padding: 24px 32px; position: relative; border-radius: 16px 16px 0 0;
+        }
+        .modal-header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .close-button {
+            position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
+            color: rgba(45, 55, 72, 0.7); font-size: 28px; font-weight: 300; cursor: pointer;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: all 0.2s ease;
+        }
+        .close-button:hover {
+            background-color: rgba(45, 55, 72, 0.1); color: #2d3748; transform: translateY(-50%) scale(1.1);
+        }
+        .modal-body {
+            padding: 32px; max-height: calc(90vh - 140px); overflow-y: auto; line-height: 1.7; color: #333;
+        }
+        .modal-body::-webkit-scrollbar { width: 6px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        .modal-body::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #a1a1a1; }
+        .modal-body p { font-size: 16px; margin-bottom: 24px; color: #555; word-break: keep-all; }
+        .modal-body h2 {
+            color: #2d3748; font-size: 20px; font-weight: 600; margin: 32px 0 16px 0;
+            padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; position: relative;
+        }
+        .modal-body h2:first-of-type { margin-top: 0; }
+        .modal-body h2::before {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 40px; height: 2px;
+            background: linear-gradient(135deg, #f8daf2 0%, #e8c5dd 100%);
+        }
+        .modal-body ul { padding-left: 0; list-style: none; margin: 16px 0; }
+        .modal-body li {
+            background: rgba(248, 218, 242, 0.15); margin: 12px 0; padding: 16px 20px;
+            border-radius: 8px; border-left: 4px solid #f8daf2; transition: all 0.2s ease; word-break: keep-all;
+        }
+        .modal-body li:hover { background: rgba(248, 218, 242, 0.25); transform: translateX(4px); }
+        .modal-body li strong { color: #2d3748; font-weight: 600; display: inline-block; margin-bottom: 4px; }
 
+        /* 애니메이션 키프레임 */
+        @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* ✅ 반응형 디자인 (미디어 쿼리를 하나로 통합했습니다.) */
+        @media screen and (max-width: 768px) {
+            /* 헤더 & 네비게이션 */
+            #header_title { font-size: 20px; }
+            nav ul { justify-content: center; }
+            nav ul li { margin-left: 20px; font-size: 14px; }
+            nav ul li a { font-size: 14px; }
+            .user-info { font-size: 14px; }
+
+            /* 모달 */
+            .modal-content { width: 95%; margin: 5% auto; max-height: 85vh; border-radius: 12px; }
+            .modal-header { padding: 20px 24px; border-radius: 12px 12px 0 0; }
+            .modal-header h1 { font-size: 20px; padding-right: 40px; line-height: 1.3; }
+            .close-button { right: 20px; font-size: 24px; width: 28px; height: 28px; }
+            .modal-body { padding: 24px 20px; max-height: calc(85vh - 120px); }
+            .modal-body p { font-size: 15px; margin-bottom: 20px; }
+            .modal-body h2 { font-size: 18px; margin: 24px 0 12px 0; }
+            .modal-body li { padding: 14px 16px; font-size: 14px; margin: 10px 0; }
+        }
+
+        @media screen and (max-width: 480px) {
+            .modal-content { width: 98%; margin: 2% auto; max-height: 95vh; border-radius: 8px; }
+            .modal-header { padding: 16px 20px; border-radius: 8px 8px 0 0; }
+            .modal-header h1 { font-size: 18px; }
+            .close-button { right: 16px; font-size: 22px; width: 26px; height: 26px; }
+            .modal-body { padding: 20px 16px; max-height: calc(95vh - 100px); }
+            .modal-body h2 { font-size: 16px; margin: 20px 0 10px 0; }
+            .modal-body li { padding: 12px 14px; font-size: 13px; line-height: 1.6; }
+        }
+    </style>
+</head>
 <body>
-
     <header>
         <h2 id="header_title">🌟{{ user.username|default:"게스트" }}의 웹 페이지 입니당🌟</h2>
     </header>
@@ -95,7 +151,8 @@
             <li><a href="/">MAIN</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url 'board:create_room' %}">방 생성</a></li>
-                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                <li><a href="#" id="open-guidelines-btn">커뮤니티 가이드라인 보기</a></li>
+                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.nickname }}님</a></li>
                 <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
             {% else %}
                 <li><a href="{% url 'user:login_page' %}">로그인</a></li>
@@ -109,6 +166,55 @@
         {% endblock %}
     </main>
 
-    <footer></footer>
+    <div id="guidelines-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>커뮤니티 가이드라인</h1>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>저희 커뮤니티는 모든 사용자가 안전하고 즐겁게 소통할 수 있는 공간을 지향합니다. 아래 가이드라인을 준수하여 건전한 커뮤니티 문화 조성에 동참해주시기 바랍니다.</p>
+                <h2>1. 금지되는 콘텐츠</h2>
+                <ul>
+                    <li><strong>불법 정보:</strong> 현행 법률에 위배되는 모든 정보(불법 도박, 마약류, 불법 촬영물 등)</li>
+                    <li><strong>음란물 및 선정적 콘텐츠:</strong> 과도한 노출이나 성적인 행위를 묘사하여 성적 수치심이나 불쾌감을 유발하는 콘텐츠</li>
+                    <li><strong>차별/혐오 표현:</strong> 특정 개인이나 집단(성별, 인종, 국적, 종교, 장애 등)에 대한 차별, 비하, 모욕, 위협을 담은 콘텐츠</li>
+                    <li><strong>명예훼손 및 권리 침해:</strong> 타인의 명예를 훼손하거나 사생활, 초상권, 저작권 등 법적으로 보호되는 권리를 침해하는 콘텐츠</li>
+                    <li><strong>스팸 및 광고:</strong> 상업적 이득을 목적으로 하는 과도한 광고, 홍보, 반복적인 도배성 콘텐츠</li>
+                    <li><strong>개인정보:</strong> 타인의 동의 없이 실명, 연락처, 주소 등 개인을 식별할 수 있는 정보를 포함하는 콘텐츠</li>
+                </ul>
+                <h2>2. 신고 및 제재 절차</h2>
+                <ul>
+                    <li><strong>신고 접수:</strong> 모든 신고는 관리자에게 전달되며, 24시간 이내에 검토를 시작합니다.</li>
+                    <li><strong>콘텐츠 조치:</strong> 위반으로 확인된 콘텐츠는 블라인드 또는 삭제 처리됩니다.</li>
+                    <li><strong>사용자 제재:</strong> 위반 사용자에 대해서는 위반 수위와 누적 횟수에 따라 경고, 임시 이용 제한, 계정 영구 정지 등의 단계적 조치가 적용됩니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const modal = document.getElementById("guidelines-modal");
+        const openBtn = document.getElementById("open-guidelines-btn");
+        const closeBtn = document.querySelector(".close-button");
+
+        if (openBtn) { // openBtn이 페이지에 있을 때만 스크립트 실행
+            openBtn.onclick = function() {
+                modal.style.display = "block";
+            }
+        }
+
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>

@@ -32,3 +32,6 @@ def main(request):
     user_rooms = UserRoom.objects.filter(user=request.user).select_related('room')
     rooms = [ur.room for ur in user_rooms]
     return render(request, "main/main.html", {"rooms": rooms})
+
+# def guidelines_view(request):
+#     return render(request,'main/guidelines.html')

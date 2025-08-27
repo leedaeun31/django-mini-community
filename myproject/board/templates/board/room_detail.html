@@ -606,7 +606,7 @@
                                     {% else %}
                                         <img src="{% static 'images/default_profile.png' %}" alt="기본 프로필">
                                     {% endif %}
-                                    <span>{{ post.author.username }} · 📅 {{ post.created_at|date:"Y-m-d H:i" }}</span>
+                                    <span>{{ post.author.nickname }} · 📅 {{ post.created_at|date:"Y-m-d H:i" }}</span>
                                 </div>
                                 <div class="comment-count">
                                     💬 댓글 {{ post.comment_count }}

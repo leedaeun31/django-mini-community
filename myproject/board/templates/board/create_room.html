@@ -384,7 +384,7 @@
             <ul>
                 <li><a href="/">MAIN</a></li>
                 {% if user.is_authenticated %}
-                    <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                    <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.nickname }}님</a></li>
                     <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
                 {% else %}
                     <li><a href="{% url 'user:login_page' %}">로그인</a></li>

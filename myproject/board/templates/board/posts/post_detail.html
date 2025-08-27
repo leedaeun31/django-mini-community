@@ -475,7 +475,7 @@
                 <li><a href="{% url 'board:room_detail' post.room.slug %}">방으로 이동</a></li>
                 <li><a href="{% url 'board:leave_room' post.room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
                 {% if user.is_authenticated %}
-                    <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                    <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.nickname }}님</a></li>
                     <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
                 {% else %}
                     <li><a href="{% url 'user:login_page' %}">로그인</a></li>
@@ -496,7 +496,7 @@
                     <img src="{% static 'images/default_profile.png' %}" class="profile-img" alt="기본 프로필">
                 {% endif %}
                 <div class="author-details">
-                    <strong>{{ post.author.username }}</strong><br>
+                    <strong>{{ post.author.nickname }}</strong><br>
                     <small>{{ post.created_at|date:"Y-m-d H:i" }}</small>
                 </div>
             </div>

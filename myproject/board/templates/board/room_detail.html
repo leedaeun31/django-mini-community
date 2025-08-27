@@ -542,7 +542,7 @@
             <li><a href="{% url 'moderation:create' 'room' room.slug %}?next={{ request.get_full_path|urlencode }}">신고하기</a></li>
             <li><a href="{% url 'board:leave_room' room.slug %}" onclick="return confirm('정말 방을 나가겠습니까?');">나가기</a></li>
             {% if user.is_authenticated %}
-                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.username }}님</a></li>
+                <li class="user-info"><a href="{% url 'user:mypage' %}">{{ user.nickname }}님</a></li>
                 <li><a href="{% url 'user:logout' %}">로그아웃</a></li>
             {% else %}
                 <li><a href="{% url 'user:login_page' %}">로그인</a></li>
